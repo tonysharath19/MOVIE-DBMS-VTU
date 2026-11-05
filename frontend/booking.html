@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b0d12">
+<title>Select Seats & Book Tickets | CINÉVERSE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0">
+<style>
+:root{--bg:#090b10;--panel:#141720;--panel2:#10131b;--border:#292e3a;--text:#f5f6fa;--muted:#a2a8b5;--gold:#2F5BFF;--gold2:#B9FF39;--blue:#7bb2df;--green:#8fe0b5;--red:#ff8f96;--silver:#4d7b97;--goldseat:#AAB7D0;--platinum:#668776}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -15%,#20212b 0,transparent 45%),var(--bg);color:var(--text);font-family:Inter,Arial,Helvetica,sans-serif;font-size:14px}a{color:inherit;text-decoration:none}button{font:inherit;cursor:pointer}[hidden]{display:none!important}.material-symbols-outlined{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:19px;line-height:1;vertical-align:middle;font-feature-settings:'liga'}
+.top{min-height:70px;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px max(4%,calc((100% - 1280px)/2));border-bottom:1px solid #242833;background:#0b0d12eF;backdrop-filter:blur(14px)}.brand{font-size:22px;font-weight:800;letter-spacing:1.2px;white-space:nowrap}.brand span{color:var(--gold)}.top-links{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.btn{min-height:39px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 13px;border:1px solid var(--border);border-radius:7px;background:#171a23;color:var(--text);font-size:12px;font-weight:700;transition:transform .18s,border-color .18s,background .18s}.btn:hover{border-color:var(--gold);transform:translateY(-1px)}.btn.gold{background:var(--gold);border-color:var(--gold);color:#19140b}.btn.gold:hover{background:var(--gold2)}.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.wrap{width:min(1260px,92%);margin:0 auto;padding:34px 0 60px}.hero{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:22px}.eyebrow{margin:0 0 9px;color:var(--gold);font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase}.hero h1{margin:0;font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:-1.1px;line-height:1.15}.muted{color:var(--muted)}.hero-sub{margin:10px 0 0;font-size:13px;line-height:1.7}.steps{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.step{display:flex;align-items:center;gap:7px;color:#808795;font-size:10px;font-weight:700;white-space:nowrap}.step-number{width:25px;height:25px;display:grid;place-items:center;border:1px solid #343947;border-radius:50%;background:#151821}.step.active{color:var(--gold2)}.step.active .step-number{background:var(--gold);color:#17130c;border-color:var(--gold)}.step-line{width:24px;height:1px;background:#343947}
+.notice{padding:13px 15px;margin:0 0 17px;border:1px solid var(--border);border-radius:8px;background:#151821;color:#dfe2ea;line-height:1.65;font-size:12px;overflow-wrap:anywhere}.notice.error{border-color:#77414a;background:#231619;color:#ffd6d9}.notice.success{border-color:#315d48;background:#111d18;color:var(--green)}.notice a{color:var(--gold2);text-decoration:underline;text-underline-offset:3px;font-weight:700}
+.movie-card{display:grid;grid-template-columns:124px minmax(0,1fr) auto;gap:22px;align-items:center;padding:18px;margin-bottom:20px;border:1px solid var(--border);border-radius:13px;background:linear-gradient(120deg,#171a23,#12151d 70%);box-shadow:0 12px 35px #0002}.movie-poster-wrap{width:124px;aspect-ratio:9/16;overflow:hidden;border:1px solid #303542;border-radius:8px;background:#080a0e}.movie-poster{display:block;width:100%;height:100%;object-fit:contain;object-position:center;background:#080a0e}.movie-name{font-size:clamp(19px,2.4vw,27px);font-weight:800;line-height:1.25;margin:0 0 8px;overflow-wrap:anywhere}.movie-meta{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:12px;color:#b6bcc8;font-size:11px}.meta-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 7px;border:1px solid #303542;border-radius:5px;background:#0e1118}.meta-pill .material-symbols-outlined{font-size:15px;color:var(--gold)}.movie-description{margin:0;color:#c4c8d1;font-size:12px;line-height:1.75;max-width:800px}.movie-side{text-align:right;white-space:nowrap}.status-badge{display:inline-flex;align-items:center;gap:6px;padding:7px 9px;border:1px solid #315d48;border-radius:6px;color:var(--green);background:#142019;font-size:10px;font-weight:800}.status-badge .material-symbols-outlined{font-size:15px}
+.panel{margin-bottom:19px;padding:21px;border:1px solid var(--border);border-radius:12px;background:var(--panel);box-shadow:0 10px 30px #0002}.panel-header{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:16px}.section-title{margin:0;font-size:17px;font-weight:800;letter-spacing:-.2px}.section-sub{margin:6px 0 0;color:var(--muted);font-size:11px;line-height:1.6}.section-index{display:grid;place-items:center;width:28px;height:28px;flex:0 0 28px;border:1px solid #314B99;border-radius:8px;background:#142047;color:var(--gold);font-size:12px;font-weight:800}.title-wrap{display:flex;gap:11px;align-items:flex-start}.date-group{margin-top:17px}.date-title{margin-bottom:10px;color:#d5d9e1;font-size:11px;font-weight:800;letter-spacing:.4px}.show-list{display:flex;flex-wrap:wrap;gap:9px}.show-time{min-width:142px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:12px 13px;border:1px solid #363c4a;border-radius:8px;background:#10131a;color:var(--text);text-align:left;transition:border-color .15s,background .15s,transform .15s}.show-time:hover:not(:disabled){border-color:var(--gold);transform:translateY(-1px)}.show-time.selected{border-color:var(--gold);background:#142047;box-shadow:0 0 0 1px #2F5BFF20 inset}.show-time strong{font-size:14px;letter-spacing:.1px}.show-time .show-screen{color:#aeb4c0;font-size:10px}.show-time .show-status{font-size:9px;font-weight:800;color:var(--green)}.show-time .show-status.sold{color:#ffbf86}.show-time:disabled{cursor:not-allowed;opacity:.56;background:#11131a}.show-time:disabled:hover{transform:none}.show-time .show-time-icon{display:flex;align-items:center;gap:5px}.show-time .show-time-icon .material-symbols-outlined{font-size:15px;color:var(--gold)}.empty{display:flex;align-items:flex-start;gap:12px;padding:17px;border:1px dashed #3a4050;border-radius:8px;background:#10131a;color:#c2c7d1;font-size:12px;line-height:1.75}.empty .material-symbols-outlined{font-size:22px;color:var(--gold)}.empty strong{color:var(--text)}.empty p{margin:3px 0 0}.empty-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.booking-layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;align-items:start;gap:19px}.seat-panel{min-width:0}.chosen-show{padding:10px 12px;margin:0 0 14px;border:1px solid #353b48;border-radius:7px;background:#10131a;color:#c8ccd6;font-size:11px;line-height:1.65}.chosen-show strong{color:var(--text)}.seat-legend{display:flex;gap:13px;flex-wrap:wrap;margin:10px 0 21px;color:#b9bfca;font-size:10px}.legend-item{display:inline-flex;align-items:center;gap:6px}.legend-seat{width:13px;height:12px;border:1px solid var(--silver);border-radius:4px;background:#182d3a}.legend-seat.goldseat{border-color:var(--goldseat);background:#332918}.legend-seat.platinum{border-color:var(--platinum);background:#1d3027}.legend-seat.chosen{border-color:var(--gold);background:var(--gold)}.legend-seat.booked{border-color:#494d59;background:#373b46;opacity:.8}
+.room{position:relative;overflow:hidden;padding:22px 12px 27px;border:1px solid #292e3a;border-radius:10px;background:radial-gradient(ellipse at 50% 0%,#26304445,transparent 57%),#10131b}.room-caption{text-align:center;margin:0 0 9px;color:#9ca6b8;font-size:9px;font-weight:800;letter-spacing:2.3px}.screen-wrap{width:min(82%,520px);margin:0 auto 30px;position:relative}.screen-arc{height:21px;border-top:3px solid #b3d4ed;border-radius:50% 50% 0 0 / 100% 100% 0 0;box-shadow:0 -10px 27px #76b8e727;transform:perspective(90px) rotateX(-4deg)}.screen-label{margin-top:-3px;text-align:center;color:#d6e4f1;font-size:9px;letter-spacing:3px;font-weight:800}.seat-map-scroll{width:100%;overflow-x:auto;padding:0 0 8px;scrollbar-color:#454b59 #10131b;scrollbar-width:thin}.seat-map{width:max-content;min-width:100%;display:flex;flex-direction:column;align-items:stretch;gap:10px}.seat-row{display:grid;grid-template-columns:20px max-content 20px;align-items:center;justify-content:center;gap:10px}.row-letter{width:20px;color:#8d95a5;font-size:9px;font-weight:700;text-align:center}.seat-cells{display:flex;justify-content:center;gap:6px}.seat{width:34px;height:31px;flex:0 0 34px;padding:0;display:grid;place-items:center;border:1px solid var(--silver);border-radius:6px 6px 4px 4px;background:#1a3342;color:#d9ebf7;font-size:9px;font-weight:700;box-shadow:inset 0 -3px #0002;transition:transform .12s,border-color .12s,background .12s}.seat:hover:not(:disabled){transform:translateY(-2px);border-color:#e6f5ff}.seat.goldseat{border-color:var(--goldseat);background:#392f1b;color:#fae0a5}.seat.platinum{border-color:var(--platinum);background:#1d352a;color:#c9e9d5}.seat.selected{border-color:var(--gold);background:var(--gold);color:#19140b;box-shadow:0 0 0 2px #2F5BFF30}.seat:disabled{border-color:#444955;background:#303440;color:#8e94a1;opacity:.7;cursor:not-allowed;box-shadow:none}.seat-gap{width:16px;flex:0 0 16px}.seat-map-note{margin:16px 0 0;text-align:center;color:#7f8796;font-size:10px;line-height:1.6}
+.class-prices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:16px}.class-price{display:flex;align-items:center;gap:8px;padding:9px;border:1px solid #303542;border-radius:7px;background:#10131a;min-width:0}.class-mark{width:8px;height:25px;flex:0 0 8px;border-radius:3px;background:var(--silver)}.class-mark.goldseat{background:var(--goldseat)}.class-mark.platinum{background:var(--platinum)}.class-price strong{display:block;font-size:10px}.class-price span{display:block;margin-top:4px;color:var(--muted);font-size:10px;white-space:nowrap}
+.summary{position:sticky;top:18px;overflow:hidden}.summary-banner{margin:-21px -21px 17px;padding:17px 20px;border-bottom:1px solid #20315B;background:linear-gradient(120deg,#111B34,#0B1020);color:var(--gold2)}.summary-banner .small-label{font-size:9px;letter-spacing:1.8px;font-weight:800;text-transform:uppercase}.summary-banner h3{margin:7px 0 0;font-size:16px;color:var(--text)}.summary-banner p{margin:5px 0 0;font-size:10px;color:#c0b8a8;line-height:1.5}.summary-empty{padding:18px 0;text-align:center;color:#868e9e;font-size:11px;line-height:1.7}.summary-empty .material-symbols-outlined{display:block;margin-bottom:9px;font-size:30px;color:#565e6d}.selected-tags{display:flex;gap:6px;flex-wrap:wrap;margin:11px 0 16px}.seat-tag{padding:6px 8px;border:1px solid #314B99;border-radius:5px;background:#142047;color:var(--gold2);font-size:10px;font-weight:800}.summary-line{display:flex;justify-content:space-between;gap:12px;margin:11px 0;color:#b7bdc8;font-size:11px}.summary-line strong{color:var(--text);font-weight:700;text-align:right}.summary-divider{height:1px;background:#2c303c;margin:15px 0}.summary-total{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}.summary-total span{font-size:11px;color:#bdc2cd}.summary-total strong{font-size:25px;letter-spacing:-.6px;color:var(--gold2)}.summary .confirm{width:100%;margin-top:18px;min-height:46px;font-size:12px}.policy{margin:12px 0 0;color:#828a99;font-size:9px;line-height:1.65}.summary-err{margin-top:10px;color:var(--red);font-size:10px;line-height:1.6}.result{border-color:#305743;background:linear-gradient(135deg,#151e1a,#141720)}.result-header{display:flex;gap:13px;align-items:center}.success-icon{width:44px;height:44px;flex:0 0 44px;display:grid;place-items:center;border-radius:50%;background:#1d3a2a;color:var(--green)}.success-icon .material-symbols-outlined{font-size:26px}.result-code{margin:19px 0 10px;padding:14px;border:1px dashed #55735f;border-radius:8px;background:#0e1612;color:var(--green);font-size:23px;font-weight:800;letter-spacing:1.5px;text-align:center}.result-summary{color:#c8d0ca;font-size:12px;line-height:1.8}.result-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}
+.seat-zone{align-self:stretch;margin:16px 0 4px;padding:8px 12px;border-left:3px solid var(--silver);border-radius:0 5px 5px 0;background:#18222c;color:#c9e3f2;font-size:9px;font-weight:800;letter-spacing:1.6px}.seat-zone:first-child{margin-top:0}.seat-zone.zone-platinum{border-left-color:var(--platinum);background:#1a2821;color:#cbe8d7}.seat-zone.zone-gold{border-left-color:var(--goldseat);background:#2b2417;color:#B9FF39}.seat-row.zone-spacer{margin-top:7px}.seat-row.zone-silver{padding-bottom:6px}.seat-row.zone-platinum,.seat-row.zone-gold{padding-top:3px}.seat.booked-seat:disabled{border-color:#c24f5a;background:#822c35;color:#ffe1e3;opacity:1;box-shadow:inset 0 -3px #4a1016}.legend-seat.available-dot{background:#2d9a66;border-color:#54d893}.legend-seat.booked{background:#822c35;border-color:#c24f5a;opacity:1}
+.checkout-ticket{margin-top:22px;padding:20px;border:1px solid #393b43;border-radius:12px;background:linear-gradient(135deg,#faf8f1,#E8EEF8);color:#17191f;box-shadow:0 12px 32px #0003}.checkout-ticket-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding-bottom:15px;border-bottom:1px dashed #a7a5a0}.ticket-overline{color:#2F5BFF;font-size:9px;font-weight:900;letter-spacing:2px}.checkout-ticket-head h3{font-size:clamp(20px,3vw,30px);margin:7px 0 0;line-height:1.2}.ticket-status{padding:7px 9px;border-radius:5px;background:#d8f0df;color:#20613a;font-size:9px;font-weight:900;letter-spacing:1px}.checkout-ticket-body{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:22px;align-items:center;padding:17px 0}.ticket-details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.ticket-details div{min-width:0}.ticket-details span{display:block;margin-bottom:5px;color:#7d7b75;font-size:9px;font-weight:800;letter-spacing:1px}.ticket-details strong{display:block;color:#191a20;font-size:12px;line-height:1.5;overflow-wrap:anywhere}.ticket-qr{display:flex;flex-direction:column;align-items:center;gap:7px;padding:10px;border-radius:9px;background:white}.ticket-qr canvas{width:154px;height:154px;max-width:100%;image-rendering:pixelated}.ticket-qr span{font-size:8px;color:#555;font-weight:900;letter-spacing:.8px;text-align:center}.ticket-footnote{padding-top:13px;border-top:1px dashed #aaa69d;color:#77746e;font-size:9px;line-height:1.6}.ticket-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.ticket-actions .btn{border-color:#d0c7b5}.ticket-actions .btn:not(.gold){background:#fff;color:#20212a}.result-actions{margin-top:18px}
+@media(max-width:560px){.checkout-ticket{padding:14px}.checkout-ticket-body{grid-template-columns:1fr}.ticket-qr{width:max-content;margin:0 auto}.ticket-details{gap:12px}.ticket-actions .btn{flex:1}}
+@media print{body *{visibility:hidden!important}#checkoutTicket,#checkoutTicket *{visibility:visible!important}#checkoutTicket{display:block!important;position:absolute;left:0;top:0;width:100%;margin:0;border:0;box-shadow:none;border-radius:0;background:#fff;color:#111;print-color-adjust:exact;-webkit-print-color-adjust:exact}.ticket-actions{display:none!important}@page{size:A4;margin:14mm}}
+@media(max-width:900px){.booking-layout{grid-template-columns:minmax(0,1fr) 280px;gap:13px}.panel{padding:17px}.summary-banner{margin:-17px -17px 15px;padding:15px 16px}.seat{width:31px;height:29px;flex-basis:31px}.seat-cells{gap:5px}.class-prices{grid-template-columns:1fr}.hero{align-items:flex-start;flex-direction:column}.steps{align-self:flex-start}}
+@media(max-width:700px){.top{padding:13px 4%;align-items:flex-start;flex-direction:column}.top-links{width:100%}.top-links .btn{flex:1}.wrap{width:94%;padding-top:24px}.hero h1{font-size:30px}.movie-card{grid-template-columns:94px minmax(0,1fr);gap:14px;padding:12px}.movie-poster-wrap{width:94px}.movie-side{grid-column:2;text-align:left}.movie-name{font-size:19px}.movie-description{font-size:11px}.booking-layout{grid-template-columns:1fr}.summary{position:static;grid-row:1}.seat-panel{grid-row:2}.show-time{min-width:calc(50% - 5px);flex:1}.panel{padding:15px}.summary-banner{margin:-15px -15px 14px;padding:14px 15px}.class-prices{grid-template-columns:repeat(3,minmax(0,1fr))}.class-price{padding:7px;gap:5px}.class-price strong{font-size:9px}.class-price span{font-size:9px}.seat{width:30px;height:28px;flex-basis:30px}.seat-cells{gap:4px}.seat-row{gap:6px}.seat-gap{width:8px;flex-basis:8px}}
+@media(max-width:420px){.wrap{width:95%}.movie-card{grid-template-columns:78px minmax(0,1fr);gap:11px}.movie-poster-wrap{width:78px}.movie-name{font-size:16px}.meta-pill{font-size:9px;padding:4px 5px}.class-prices{grid-template-columns:1fr}.show-time{min-width:100%}.step{font-size:9px}.step-line{width:10px}.seat{width:27px;height:27px;flex-basis:27px;font-size:8px}.seat-cells{gap:3px}.seat-row{gap:4px}.row-letter{width:15px}.seat-map{gap:8px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+
+/* Portrait digital ticket: narrow, readable, and designed for print/PNG export. */
+.checkout-ticket{width:min(470px,100%);margin:18px auto 0;padding:20px;border:1px solid #cfc6b5;border-radius:14px;background:#F7FAFF;color:#17191f;box-shadow:0 16px 45px #0004;overflow:hidden}.checkout-ticket-head{align-items:flex-start;gap:10px;padding-bottom:14px}.checkout-ticket-head h3{max-width:100%;font-size:25px;line-height:1.15;overflow-wrap:anywhere}.ticket-overline{font-size:9px;letter-spacing:1.6px}.ticket-status{flex:0 0 auto;max-width:120px;text-align:center;line-height:1.35}.checkout-ticket-body{display:flex;flex-direction:column;align-items:stretch;gap:16px;padding:16px 0}.ticket-details{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 12px}.ticket-details span{font-size:8px;letter-spacing:.8px}.ticket-details strong{font-size:12px;line-height:1.45;word-break:break-word}.ticket-qr{width:max-content;max-width:100%;align-self:center;padding:10px 12px}.ticket-qr canvas{width:150px;height:150px}.ticket-qr span{font-size:8px;line-height:1.5}.ticket-footnote{font-size:9px;line-height:1.6;overflow-wrap:anywhere}.ticket-actions{display:flex;flex-direction:column;gap:8px;margin-top:13px}.ticket-actions .btn{width:100%;justify-content:center;min-height:39px}.result{overflow:visible}.result-actions{margin-top:16px}
+@media(max-width:560px){.checkout-ticket{width:100%;padding:15px}.checkout-ticket-head h3{font-size:22px}.ticket-details{gap:11px 8px}.ticket-details strong{font-size:11px}.ticket-qr canvas{width:126px;height:126px}.ticket-actions{display:flex!important}.ticket-actions .btn{flex:initial}}
+@media print{#checkoutTicket{width:80mm;max-width:80mm;margin:0 auto;padding:5mm;border:0;border-radius:0;box-shadow:none;background:#fff!important;color:#111!important}.checkout-ticket-head h3{font-size:18pt}.checkout-ticket-body{display:flex;flex-direction:column}.ticket-details{gap:3mm}.ticket-details strong{font-size:9pt}.ticket-qr canvas{width:32mm;height:32mm}.ticket-footnote{font-size:7pt}.ticket-actions{display:none!important}@page{size:80mm auto;margin:0}}
+
+
+/* CINÉVERSE visual system: carbon black, cobalt blue, acid lime and white. */
+:root{--bg:#05070B;--panel:#0D121C;--panel2:#0A0F18;--border:#27334B;--text:#F7FAFF;--muted:#A8B4C9;--gold:#2F5BFF;--gold2:#B9FF39;--green:#B9FF39;--red:#FF5364;--blue:#86A7FF;--silver:#2F5BFF;--platinum:#B9FF39;--recliner:#AAB7D0;--goldseat:#AAB7D0}
+body{background-color:var(--bg);color:var(--text)}
+
+
+/* Palette-aware seating zones and portrait ticket output. */
+.seat{border-color:#2f5bff;background:#162653;color:#eaf0ff}.seat.goldseat{border-color:#8f9db7;background:#252d3e;color:#f3f6ff}.seat.platinum{border-color:#b9ff39;background:#263116;color:#eaffb8}.seat.selected{border-color:#b9ff39;background:#b9ff39;color:#101609;box-shadow:0 0 0 2px #b9ff3930}.seat:disabled,.seat.booked-seat:disabled{border-color:#ff5364;background:#822c35;color:#ffe1e3;opacity:1}.screen-arc{border-color:#5f87ff;box-shadow:0 -10px 27px #2f5bff38}.class-mark{background:#2f5bff}.class-mark.platinum{background:#b9ff39}.class-mark.goldseat{background:#aab7d0}.seat-zone{border-left-color:#2f5bff;background:#111c39;color:#cdd9ff}.seat-zone.zone-platinum{border-left-color:#b9ff39;background:#18210e;color:#e8ffb6}.seat-zone.zone-gold{border-left-color:#aab7d0;background:#1a2231;color:#e9effa}.legend-seat{border-color:#2f5bff;background:#162653}.legend-seat.platinum{border-color:#b9ff39;background:#263116}.legend-seat.goldseat{border-color:#aab7d0;background:#252d3e}.legend-seat.available-dot{background:#b9ff39;border-color:#d3ff85}.legend-seat.booked{background:#822c35;border-color:#ff5364}
+.checkout-ticket{width:min(480px,100%);margin:22px auto 0;padding:20px;border-color:#c5cddd;border-radius:12px;background:#f7f9ff;color:#111827}.checkout-ticket-body{display:flex;flex-direction:column;align-items:stretch;gap:16px;padding:17px 0}.ticket-details{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 12px}.ticket-details strong{font-size:12px;line-height:1.55}.ticket-qr{align-self:center;width:max-content;max-width:100%}.ticket-qr canvas{width:148px;height:148px}.ticket-footnote{font-size:10px;line-height:1.7}.ticket-status{background:#e9ffd3;color:#315700}.result{border-color:#2743a5;background:linear-gradient(135deg,#0e1830,#10141f)}.result-code{border-color:#2f5bff;background:#0b1328;color:#b9ff39}.success-icon{background:#263116;color:#b9ff39}
+@media(max-width:560px){.checkout-ticket{width:100%;padding:15px}.checkout-ticket-body{display:flex;flex-direction:column}.ticket-qr{align-self:center}.ticket-details{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media print{.checkout-ticket{width:80mm;max-width:80mm;margin:0 auto;padding:5mm;page-break-inside:avoid}.checkout-ticket-body{display:flex;flex-direction:column}.ticket-qr canvas{width:30mm;height:30mm}@page{size:80mm auto;margin:0}}
+
+
+/* Accessible cobalt primary controls and high-contrast focus rings. */
+.btn.gold,.btn.primary,.cta,.nav-btn.gold{background:#2F5BFF!important;color:#FFFFFF!important;border-color:#2F5BFF!important}.btn.gold:hover,.btn.primary:hover,.cta:hover,.nav-btn.gold:hover{background:#2149DB!important;border-color:#2149DB!important}.btn:focus-visible,button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #B9FF39;outline-offset:3px}
+
+
+.summary-banner{background:linear-gradient(120deg,#172a67,#0c1429);border-bottom-color:#2f5bff;color:#b9ff39}.summary-banner h3{color:#fff}.summary-banner p{color:#c2cde4}.selected-tags .seat-tag{border-color:#2f5bff;background:#101a34;color:#b9ff39}.summary-total strong{color:#b9ff39}.result{border-color:#2f5bff;background:linear-gradient(135deg,#0d1730,#0b101a)}.checkout-ticket-head{border-color:#9caed4}.ticket-overline{color:#2f5bff}.checkout-ticket-head h3{color:#101827}.ticket-footnote{border-color:#bac6dc;color:#64728b}
+
+
+/* CINÉVERSE shared palette and typography */
+:root{--bg:#07090e;--panel:#111620;--panel2:#0b1019;--border:#29354b;--text:#f7f9ff;--muted:#a9b4c8;--gold:#2f5bff;--gold2:#b9ff39;--green:#b9ff39;--red:#ff5964}
+body{font-family:Inter,Arial,sans-serif;color:var(--text)}
+button,input,select,textarea{font-family:Inter,Arial,sans-serif}
+
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="/">CINÉ<span>VERSE</span></a>
+  <nav class="top-links" aria-label="Main navigation">
+    <a class="btn" href="/profile.html"><span class="material-symbols-outlined">confirmation_number</span> My Bookings / Profile</a>
+    <a class="btn" href="/"><span class="material-symbols-outlined">movie</span> Explore Movies</a>
+  </nav>
+</header>
+<main class="wrap">
+  <header class="hero">
+    <div><p class="eyebrow">Your cinema experience</p><h1>Book movie tickets</h1><p class="hero-sub muted">Choose a show, find your perfect seats, and enjoy the big screen.</p></div>
+    <div class="steps" aria-label="Booking steps"><div class="step active"><span class="step-number">1</span> SHOW</div><span class="step-line"></span><div class="step"><span class="step-number">2</span> SEATS</div><span class="step-line"></span><div class="step"><span class="step-number">3</span> CONFIRM</div></div>
+  </header>
+  <div id="notice" class="notice" role="status" hidden></div>
+
+  <section id="moviePanel" class="movie-card" hidden>
+    <div class="movie-poster-wrap"><img id="moviePoster" class="movie-poster" alt="Movie poster"></div>
+    <div><p class="eyebrow">Selected movie</p><h2 id="movieName" class="movie-name"></h2><div id="movieMeta" class="movie-meta"></div><p id="movieDescription" class="movie-description"></p></div>
+    <div class="movie-side"><span class="status-badge"><span class="material-symbols-outlined">verified</span> NOW SHOWING</span></div>
+  </section>
+
+  <section class="panel" id="showBox">
+    <div class="panel-header"><div class="title-wrap"><span class="section-index">01</span><div><h2 class="section-title">Select a showtime</h2><p class="section-sub">Choose a date and time. Only sessions that have not started can be booked.</p></div></div></div>
+    <div id="shows" aria-live="polite"><div class="empty"><span class="material-symbols-outlined">hourglass_top</span><div>Loading available showtimes…</div></div></div>
+  </section>
+
+  <div id="bookingLayout" class="booking-layout" hidden>
+    <section id="seatBox" class="panel seat-panel">
+      <div class="panel-header"><div class="title-wrap"><span class="section-index">02</span><div><h2 class="section-title">Choose your seats</h2><p class="section-sub">Tap any available seat to add it to your order.</p></div></div></div>
+      <div id="selectedShowLabel" class="chosen-show"></div>
+      <div class="seat-legend" aria-label="Seat legend"><span class="legend-item"><i class="legend-seat"></i> Front Row · Silver</span><span class="legend-item"><i class="legend-seat platinum"></i> Lounge · Platinum</span><span class="legend-item"><i class="legend-seat goldseat"></i> Recliner Lounge · Gold</span><span class="legend-item"><i class="legend-seat available-dot"></i> Available</span><span class="legend-item"><i class="legend-seat chosen"></i> Selected</span><span class="legend-item"><i class="legend-seat booked"></i> Booked</span></div>
+      <div class="room"><p class="room-caption">THEATRE VIEW</p><div class="screen-wrap"><div class="screen-arc"></div><p class="screen-label">SCREEN THIS WAY</p></div><div class="seat-map-scroll"><div id="seatList" class="seat-map"><div class="empty">Choose a showtime to load its seat map.</div></div></div><p class="seat-map-note">Seat layout is illustrative; seat availability and prices are loaded from the selected show.</p></div>
+      <div id="classPrices" class="class-prices"></div>
+    </section>
+
+    <aside class="panel summary" aria-label="Booking summary">
+      <div class="summary-banner"><p class="small-label">Your order</p><h3>Booking summary</h3><p>Review your selected seats before confirming.</p></div>
+      <div id="summaryEmpty" class="summary-empty"><span class="material-symbols-outlined">event_seat</span>Your selected seats will appear here.</div>
+      <div id="summaryContent" hidden>
+        <div class="summary-line"><span>Movie</span><strong id="summaryMovie">—</strong></div>
+        <div class="summary-line"><span>Show date</span><strong id="summaryDate">—</strong></div>
+        <div class="summary-line"><span>Showtime</span><strong id="summaryTime">—</strong></div>
+        <div class="summary-line"><span>Screen</span><strong id="summaryScreen">—</strong></div>
+        <div class="summary-divider"></div>
+        <div class="summary-line"><span>Selected seats</span><strong id="seatCount">0</strong></div>
+        <div id="selectedTags" class="selected-tags"></div>
+        <div id="priceBreakdown"></div>
+        <div class="summary-divider"></div>
+        <div class="summary-total"><span>Total amount</span><strong id="total">₹0.00</strong></div>
+      </div>
+      <button id="confirmBooking" class="btn gold confirm" disabled><span class="material-symbols-outlined">lock</span> Confirm demo booking</button>
+      <p class="policy">This is an academic demo. Confirming records a demo payment in the local database; no real payment is taken.</p>
+      <p id="summaryError" class="summary-err" hidden></p>
+    </aside>
+  </div>
+
+  <section id="successBox" class="panel result" hidden>
+    <div class="result-header"><div class="success-icon"><span class="material-symbols-outlined">check_circle</span></div><div><p class="eyebrow">Booking confirmed</p><h2 class="section-title">Your seats are reserved.</h2><p class="section-sub">Save your booking reference for your records.</p></div></div>
+    <div id="bookingCode" class="result-code"></div><p id="bookingSummary" class="result-summary"></p>
+    <section id="checkoutTicket" class="checkout-ticket" hidden aria-label="Your demo ticket">
+      <div class="checkout-ticket-head"><div><p class="ticket-overline">CINÉVERSE · ADMIT ONE</p><h3 id="ticketMovie">Your movie</h3></div><span id="ticketStatus" class="ticket-status">CONFIRMED</span></div>
+      <div class="checkout-ticket-body"><div class="ticket-details">
+        <div><span>DATE</span><strong id="ticketDate">—</strong></div><div><span>SHOWTIME</span><strong id="ticketTime">—</strong></div>
+        <div><span>SCREEN</span><strong id="ticketScreen">—</strong></div><div><span>SEATS</span><strong id="ticketSeats">—</strong></div>
+        <div><span>BOOKING CODE</span><strong id="ticketCode">—</strong></div><div><span>TOTAL</span><strong id="ticketAmount">—</strong></div>
+      </div><div class="ticket-qr"><canvas id="successQr" width="174" height="174" aria-label="Decorative demo QR image"></canvas><span>DEMO QR · NOT SCANNABLE</span></div></div>
+      <p class="ticket-footnote">Academic project demo ticket. No real payment has been processed; this QR-style graphic is decorative only.</p>
+      <div class="ticket-actions"><button id="downloadTicketBtn" class="btn gold" type="button"><span class="material-symbols-outlined">download</span> Download ticket PNG</button><button id="printTicketBtn" class="btn" type="button"><span class="material-symbols-outlined">print</span> Print / Save PDF</button></div>
+    </section>
+    <div class="result-actions"><a class="btn gold" href="/profile.html"><span class="material-symbols-outlined">confirmation_number</span> View My Bookings</a><a class="btn" href="/"><span class="material-symbols-outlined">movie</span> Explore more movies</a></div>
+  </section>
+</main>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const params = new URLSearchParams(location.search);
+const movieId = Number(params.get('movie_id'));
+let movie = null, shows = [], scheduledShowCount = 0, selectedShow = null, seats = [], selectedSeatIds = new Set();
+
+function notify(message, type = '') {
+  const node = $('notice'); node.replaceChildren(); node.className = 'notice' + (type ? ' ' + type : '');
+  if (typeof message === 'string') node.textContent = message; else node.appendChild(message);
+  node.hidden = false; window.scrollTo({top: 0, behavior: 'smooth'});
+}
+function makeElement(tag, className, text) { const el = document.createElement(tag); if (className) el.className = className; if (text !== undefined) el.textContent = text; return el; }
+function emptyBlock(title, detail, showAdminLink = false) {
+  const wrap = makeElement('div', 'empty');
+  const icon = makeElement('span', 'material-symbols-outlined', 'event_busy'); wrap.appendChild(icon);
+  const body = makeElement('div'); body.appendChild(makeElement('strong', '', title)); body.appendChild(makeElement('p', '', detail));
+  if (showAdminLink) { const actions = makeElement('div', 'empty-actions'); const link = makeElement('a', 'btn', 'Return to Explore Movies'); link.href = '/'; actions.appendChild(link); body.appendChild(actions); }
+  wrap.appendChild(body); return wrap;
+}
+async function api(url, options = {}) {
+  const response = await fetch(url, { ...options, credentials: 'same-origin', headers: { ...(options.body ? {'Content-Type': 'application/json'} : {}), ...(options.headers || {}) } });
+  const data = await response.json().catch(() => ({}));
+  if (response.status === 401) { location.replace('/login.html'); throw new Error('Please sign in first.'); }
+  if (response.status === 403 && data.requiresProfile) { location.replace('/profile.html'); throw new Error(data.message || 'Complete your profile before booking.'); }
+  if (!response.ok) throw new Error(data.message || `Request failed (${response.status}).`);
+  return data;
+}
+function money(value) { return Number(value || 0).toLocaleString('en-IN', {style:'currency', currency:'INR', minimumFractionDigits:2, maximumFractionDigits:2}); }
+function formatDate(value, options = {weekday:'short', day:'2-digit', month:'short', year:'numeric'}) {
+  if (!value) return 'Date unavailable'; const date = new Date(String(value).slice(0,10) + 'T12:00:00');
+  return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleDateString('en-IN', options);
+}
+function isFutureShow(show) {
+  if (typeof show.is_future === 'boolean') return show.is_future;
+  const date = String(show.show_date || '').slice(0,10), match = String(show.start_time || '').trim().match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)$/i);
+  if (!date || !match) return false;
+  let hours = Number(match[1]) % 12; if (match[4].toUpperCase() === 'PM') hours += 12;
+  const point = new Date(`${date}T${String(hours).padStart(2,'0')}:${match[2]}:${match[3] || '00'}`);
+  return point.getTime() > Date.now();
+}
+function className(value) { const key = String(value || '').toLowerCase(); return key === 'gold' ? 'goldseat' : key === 'platinum' ? 'platinum' : 'silver'; }
+function titleCase(value) { const text = String(value || ''); return text ? text.charAt(0).toUpperCase() + text.slice(1).toLowerCase() : 'Standard'; }
+function seatCategory(value) { const key=String(value||'').toLowerCase(); return key==='silver'?'Front Row · Silver':key==='platinum'?'Lounge · Platinum':key==='gold'?'Recliner Lounge · Gold':'Standard'; }
+function zoneLabel(value) { const key=String(value||'').toLowerCase(); return key==='silver'?'FRONT ROW · SILVER':key==='platinum'?'LOUNGE · PLATINUM':'RECLINER LOUNGE · GOLD'; }
+function renderMovie() {
+  $('moviePanel').hidden = false;
+  $('movieName').textContent = movie.title || 'Untitled movie';
+  $('movieMeta').replaceChildren();
+  const meta = [[movie.genre,'category'],[movie.language,'language'],[movie.runtime_minutes ? `${movie.runtime_minutes} min` : null,'schedule'],[movie.imdb_rating != null ? `IMDb ${Number(movie.imdb_rating).toFixed(1)}/10` : null,'star']];
+  meta.forEach(([value, iconName]) => { if (!value) return; const chip = makeElement('span','meta-pill'); chip.append(makeElement('span','material-symbols-outlined',iconName),document.createTextNode(String(value))); $('movieMeta').appendChild(chip); });
+  $('movieDescription').textContent = movie.plot || 'No description is available for this movie.';
+  $('moviePoster').onerror = () => { $('moviePoster').removeAttribute('src'); $('moviePoster').alt = `${movie.title || 'Movie'} poster is unavailable`; };
+  if (movie.poster_path) $('moviePoster').src = movie.poster_path; else { $('moviePoster').removeAttribute('src'); $('moviePoster').alt = 'No movie poster available'; }
+}
+function renderShows() {
+  const target = $('shows'); target.replaceChildren();
+  if (!shows.length) {
+    const title = scheduledShowCount > 0 ? 'Scheduled sessions found, but none are bookable yet.' : 'This movie has not been scheduled yet.';
+    const detail = scheduledShowCount > 0
+      ? `Movie #${movieId} exists and has ${scheduledShowCount} scheduled show(s), but no session is available for today or a future date on an active screen. In Admin Dashboard → Shows, check the show date and time; in Screens, confirm the screen is active.`
+      : `Movie #${movieId} exists in your catalogue, but no scheduled show is linked to it. Open Admin Dashboard → Shows, select this movie and an active screen, choose a future date, then schedule a showtime.`;
+    target.appendChild(emptyBlock(title, detail, true)); return;
+  }
+  const groups = new Map();
+  shows.forEach(show => { if (!groups.has(show.show_date)) groups.set(show.show_date, []); groups.get(show.show_date).push(show); });
+  groups.forEach((dayShows, date) => {
+    const group = makeElement('div','date-group');
+    group.appendChild(makeElement('h3','date-title',formatDate(date,{weekday:'long',day:'numeric',month:'long',year:'numeric'})));
+    const list = makeElement('div','show-list');
+    dayShows.forEach(show => {
+      const future = isFutureShow(show), seatsAvailable = Number(show.available_count || 0), seatCount = Number(show.seat_count || 0);
+      const button = makeElement('button','show-time'); button.type = 'button';
+      const canBook = future && seatsAvailable > 0 && seatCount > 0;
+      if (!canBook) button.disabled = true;
+      const time = makeElement('strong','',show.start_time || 'Time unavailable');
+      const screen = makeElement('span','show-screen',show.screen_name || 'Screen');
+      const statusWrap = makeElement('span','show-time-icon'); statusWrap.appendChild(makeElement('span','material-symbols-outlined',canBook ? 'check_circle' : (!future ? 'schedule' : seatCount === 0 ? 'warning' : 'event_busy')));
+      const statusText = !future ? 'TIME PASSED' : seatCount === 0 ? 'SEATS NOT CONFIGURED' : seatsAvailable === 0 ? 'SOLD OUT' : `${seatsAvailable} SEAT${seatsAvailable === 1 ? '' : 'S'} LEFT`;
+      statusWrap.appendChild(makeElement('span','show-status' + (canBook ? '' : ' sold'),statusText));
+      button.append(time,screen,statusWrap);
+      if (canBook) button.addEventListener('click', () => selectShow(show, button));
+      list.appendChild(button);
+    });
+    group.appendChild(list); target.appendChild(group);
+  });
+  if (!shows.some(isFutureShow)) {
+    const note = makeElement('div','notice','The listed sessions have already started. They are shown for clarity but cannot be booked. Please choose another date or ask the admin to schedule a future show.');
+    note.style.marginTop = '15px'; target.appendChild(note);
+  }
+}
+async function selectShow(show, button) {
+  selectedShow = show; selectedSeatIds.clear(); seats = [];
+  document.querySelectorAll('.show-time').forEach(node => node.classList.remove('selected')); button.classList.add('selected');
+  $('bookingLayout').hidden = false; $('seatBox').hidden = false; $('selectedShowLabel').replaceChildren();
+  $('selectedShowLabel').append(makeElement('strong','',`${movie.title} · ${formatDate(show.show_date)} · ${show.start_time}`), document.createTextNode(` · ${show.screen_name}`));
+  $('seatList').replaceChildren(makeElement('div','empty','Loading the live seat layout…'));
+  $('classPrices').replaceChildren(); $('summaryEmpty').hidden = false; $('summaryContent').hidden = true; $('confirmBooking').disabled = true; $('summaryError').hidden = true;
+  setStep(2);
+  try {
+    const result = await api(`/api/booking/shows/${show.show_id}/seats`); seats = result.seats || [];
+    renderSeatMap(); renderClassPrices(); updateSummary(); $('bookingLayout').scrollIntoView({behavior:'smooth',block:'start'});
+  } catch (error) { showSummaryError(error.message); $('seatList').replaceChildren(makeElement('div','empty',error.message)); }
+}
+function setStep(step) {
+  document.querySelectorAll('.step').forEach((el,index) => { el.classList.toggle('active',index < step); });
+}
+function renderSeatMap() {
+  const target = $('seatList'); target.replaceChildren();
+  if (!seats.length) { target.appendChild(makeElement('div','empty','No seat records were created for this show. Open Admin → Shows and refresh the show list; if the problem remains, check that the screen has a configured seat layout.')); return; }
+  const rows = new Map();
+  [...seats].sort((a,b) => String(a.seat_number).localeCompare(String(b.seat_number),undefined,{numeric:true,sensitivity:'base'})).forEach(seat => {
+    const seatName = String(seat.seat_number || '?'), rowName = (seatName.match(/^[A-Za-z]+/) || ['?'])[0].toUpperCase();
+    if (!rows.has(rowName)) rows.set(rowName,[]); rows.get(rowName).push(seat);
+  });
+  let lastZone = null;
+  rows.forEach((rowSeats,rowName) => {
+    const key=String(rowSeats[0]?.seat_class||'silver').toLowerCase();
+    if (key !== lastZone) {
+      const zone=makeElement('div','seat-zone zone-'+(key==='gold'?'gold':key==='platinum'?'platinum':'silver'),zoneLabel(key));
+      target.appendChild(zone); lastZone=key;
+    }
+    const row = makeElement('div','seat-row zone-'+(key==='gold'?'gold':key==='platinum'?'platinum':'silver')); row.appendChild(makeElement('span','row-letter',rowName));
+    const cells = makeElement('div','seat-cells');
+    rowSeats.forEach((seat,index) => {
+      const available = String(seat.seat_status).toLowerCase() === 'available'; const id = Number(seat.show_seat_id);
+      const btn = makeElement('button','seat ' + className(seat.seat_class) + (available ? ' available-seat' : ' booked-seat')); btn.type = 'button'; btn.textContent = String(seat.seat_number);
+      btn.disabled = !available; btn.title = `${seat.seat_number} · ${seatCategory(seat.seat_class)} · ${money(seat.price)}${available ? ' · Available' : ' · Booked'}`;
+      btn.setAttribute('aria-label',btn.title);
+      if (selectedSeatIds.has(id)) btn.classList.add('selected');
+      btn.addEventListener('click',() => { if (!available) return; if (selectedSeatIds.has(id)) selectedSeatIds.delete(id); else selectedSeatIds.add(id); btn.classList.toggle('selected',selectedSeatIds.has(id)); updateSummary(); });
+      cells.appendChild(btn);
+      if (rowSeats.length >= 8 && index === Math.floor(rowSeats.length / 2) - 1) cells.appendChild(makeElement('span','seat-gap'));
+    });
+    row.append(cells,makeElement('span','row-letter',rowName)); target.appendChild(row);
+  });
+}
+function renderClassPrices() {
+  const target = $('classPrices'); target.replaceChildren();
+  const definitions = [{key:'silver',name:'Front Row · Silver',cls:''},{key:'platinum',name:'Lounge · Platinum',cls:'platinum'},{key:'gold',name:'Recliner Lounge · Gold',cls:'goldseat'}];
+  definitions.forEach(def => {
+    const prices = seats.filter(seat => String(seat.seat_class).toLowerCase() === def.key).map(seat => Number(seat.price));
+    if (!prices.length) return;
+    const card = makeElement('div','class-price'); card.appendChild(makeElement('i','class-mark ' + def.cls));
+    const text = makeElement('div'); text.appendChild(makeElement('strong','',def.name));
+    text.appendChild(makeElement('span','',money(Math.min(...prices)) + (prices.every(price => price === prices[0]) ? '' : ' onwards')));
+    card.appendChild(text); target.appendChild(card);
+  });
+}
+function updateSummary() {
+  const chosen = seats.filter(seat => selectedSeatIds.has(Number(seat.show_seat_id))).sort((a,b) => String(a.seat_number).localeCompare(String(b.seat_number),undefined,{numeric:true,sensitivity:'base'}));
+  const total = chosen.reduce((sum,seat) => sum + Number(seat.price),0);
+  $('summaryEmpty').hidden = chosen.length > 0; $('summaryContent').hidden = chosen.length === 0;
+  $('seatCount').textContent = `${chosen.length} seat${chosen.length === 1 ? '' : 's'}`;
+  $('selectedTags').replaceChildren(); chosen.forEach(seat => $('selectedTags').appendChild(makeElement('span','seat-tag',seat.seat_number)));
+  $('priceBreakdown').replaceChildren();
+  const byClass = new Map(); chosen.forEach(seat => { const key = titleCase(seat.seat_class); byClass.set(seatCategory(seat.seat_class),(byClass.get(seatCategory(seat.seat_class))||0)+Number(seat.price)); });
+  byClass.forEach((amount,name) => { const line = makeElement('div','summary-line'); line.append(makeElement('span','',name + ' seats'),makeElement('strong','',money(amount))); $('priceBreakdown').appendChild(line); });
+  if (selectedShow) {
+    $('summaryMovie').textContent = movie.title; $('summaryDate').textContent = formatDate(selectedShow.show_date,{weekday:'short',day:'2-digit',month:'short'});
+    $('summaryTime').textContent = selectedShow.start_time; $('summaryScreen').textContent = selectedShow.screen_name;
+  }
+  $('total').textContent = money(total); $('confirmBooking').disabled = !selectedShow || chosen.length === 0;
+  $('summaryError').hidden = true;
+}
+function showSummaryError(message) { $('summaryError').textContent = message; $('summaryError').hidden = false; }
+function qrMatrix(value) {
+  const n=29, matrix=Array.from({length:n},()=>Array(n).fill(false)), reserved=Array.from({length:n},()=>Array(n).fill(false));
+  function finder(ox,oy){for(let y=0;y<7;y++)for(let x=0;x<7;x++){const xx=ox+x,yy=oy+y;reserved[yy][xx]=true;matrix[yy][xx]=x===0||y===0||x===6||y===6||(x>=2&&x<=4&&y>=2&&y<=4);}}
+  finder(0,0);finder(n-7,0);finder(0,n-7);
+  let seed=2166136261;for(const ch of String(value)){seed^=ch.charCodeAt(0);seed=Math.imul(seed,16777619)>>>0;}
+  function rand(){seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return (seed>>>0)/4294967296;}
+  for(let y=0;y<n;y++)for(let x=0;x<n;x++)if(!reserved[y][x])matrix[y][x]=rand()>.51;
+  return matrix;
+}
+function drawFakeQr(canvas,value){if(!canvas)return;const ctx=canvas.getContext('2d'),m=qrMatrix(value),n=m.length,cell=Math.floor(Math.min(canvas.width,canvas.height)/(n+4)),offset=Math.floor((canvas.width-cell*n)/2);ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#11151b';m.forEach((row,y)=>row.forEach((on,x)=>{if(on)ctx.fillRect(offset+x*cell,offset+y*cell,cell,cell)}));}
+function ticketPayload(){return {booking_code:$('ticketCode').textContent,movie_title:$('ticketMovie').textContent,show_date:selectedShow?.show_date,show_time:selectedShow?.start_time,screen_name:selectedShow?.screen_name,seats:[...selectedSeatIds].map(id=>seats.find(s=>Number(s.show_seat_id)===id)?.seat_number).filter(Boolean),total_amount:$('ticketAmount').textContent,booking_status:'CONFIRMED'};}
+function downloadTicketPng(ticket){const canvas=document.createElement('canvas');canvas.width=900;canvas.height=1580;const c=canvas.getContext('2d');c.fillStyle='#090b10';c.fillRect(0,0,canvas.width,canvas.height);c.fillStyle='#F7FAFF';c.fillRect(36,30,828,1520);c.fillStyle='#2F5BFF';c.fillRect(36,30,13,1520);c.fillStyle='#1a1c22';c.font='bold 30px Arial';c.fillText('CINÉVERSE',82,100);c.fillStyle='#2F5BFF';c.font='bold 15px Arial';c.fillText('ADMIT ONE · ACADEMIC DEMO TICKET',82,132);c.strokeStyle='#c8beaa';c.setLineDash([8,7]);c.beginPath();c.moveTo(82,157);c.lineTo(818,157);c.stroke();c.setLineDash([]);c.fillStyle='#191a20';c.font='bold 38px Arial';wrapTicketCanvas(c,String(ticket.movie_title||'Movie'),82,220,730,46,2);const facts=[['SHOW DATE',formatDate(ticket.show_date,{weekday:'short',day:'2-digit',month:'short',year:'numeric'})],['SHOWTIME',ticket.show_time||'—'],['SCREEN',ticket.screen_name||'—'],['SEATS',(ticket.seats||[]).join(', ')||'—'],['BOOKING CODE',ticket.booking_code||'—'],['TOTAL AMOUNT',String(ticket.total_amount||'—')]];let startY=330;facts.forEach((item,i)=>{const col=i%2,row=Math.floor(i/2),x=82+col*370,y=startY+row*128;c.fillStyle='#6F7C95';c.font='bold 13px Arial';c.fillText(item[0],x,y);c.fillStyle='#191a20';c.font='bold 21px Arial';wrapTicketCanvas(c,String(item[1]||'—'),x,y+35,330,27,2)});const qr=document.createElement('canvas');qr.width=qr.height=250;drawFakeQr(qr,ticket.booking_code||'CINEVERSE-DEMO');c.drawImage(qr,325,850,250,250);c.textAlign='center';c.fillStyle='#7b6a48';c.font='bold 13px Arial';c.fillText('DEMO QR · NOT SCANNABLE',450,1130);c.textAlign='left';c.strokeStyle='#c8beaa';c.setLineDash([8,7]);c.beginPath();c.moveTo(82,1170);c.lineTo(818,1170);c.stroke();c.setLineDash([]);c.fillStyle='#77746e';c.font='14px Arial';wrapTicketCanvas(c,'Demo ticket only. No real payment has been processed. The QR-style graphic is decorative and cannot be scanned.',82,1216,730,22,4);canvas.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`CINEVERSE-${String(ticket.booking_code||'ticket')}.png`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)},'image/png')}function wrapTicketCanvas(ctx,text,x,y,width,lineHeight,maxLines){const words=String(text||'—').split(/\s+/);let line='',lines=0;for(const word of words){const next=line?line+' '+word:word;if(ctx.measureText(next).width>width&&line){ctx.fillText(line,x,y);y+=lineHeight;lines++;line=word;if(lines>=maxLines-1)break}else line=next}if(line){while(ctx.measureText(line).width>width&&line.length>3)line=line.slice(0,-4)+'…';ctx.fillText(line,x,y)}}
+$('downloadTicketBtn').addEventListener('click',()=>downloadTicketPng(ticketPayload()));
+$('printTicketBtn').addEventListener('click',()=>window.print());
+
+$('confirmBooking').addEventListener('click', async () => {
+  if (!selectedShow || selectedSeatIds.size === 0) return;
+  const button = $('confirmBooking'); button.disabled = true; button.textContent = 'Confirming booking…';
+  try {
+    const data = await api('/api/bookings',{method:'POST',body:JSON.stringify({show_id:selectedShow.show_id,show_seat_ids:[...selectedSeatIds]})});
+    $('successBox').hidden = false; $('showBox').hidden = true; $('bookingLayout').hidden = true; $('moviePanel').hidden = true; $('notice').hidden = true;
+    $('bookingCode').textContent = data.booking.booking_code;
+    const selectedNames = seats.filter(seat => selectedSeatIds.has(Number(seat.show_seat_id))).map(seat => seat.seat_number).join(', ');
+    $('bookingSummary').textContent = `${movie.title} · ${formatDate(selectedShow.show_date,{weekday:'long',day:'2-digit',month:'long',year:'numeric'})} · ${selectedShow.start_time} · ${selectedShow.screen_name} · Seats ${selectedNames} · ${money(data.booking.total_amount)}. ${data.message}`;
+    $('ticketMovie').textContent=movie.title;$('ticketStatus').textContent='CONFIRMED';$('ticketDate').textContent=formatDate(selectedShow.show_date,{weekday:'short',day:'2-digit',month:'short',year:'numeric'});$('ticketTime').textContent=selectedShow.start_time;$('ticketScreen').textContent=selectedShow.screen_name;$('ticketSeats').textContent=selectedNames||'—';$('ticketCode').textContent=data.booking.booking_code;$('ticketAmount').textContent=money(data.booking.total_amount);drawFakeQr($('successQr'),data.booking.booking_code);$('checkoutTicket').hidden=false;
+    setStep(3); $('successBox').scrollIntoView({behavior:'smooth',block:'start'});
+  } catch (error) { notify(error.message,'error'); button.disabled = false; } finally { button.innerHTML = '<span class="material-symbols-outlined">lock</span> Confirm demo booking'; }
+});
+async function init() {
+  if (!Number.isInteger(movieId) || movieId < 1) { notify('No movie was selected. Return to Explore Movies and choose a movie.','error'); $('shows').replaceChildren(emptyBlock('No movie selected','Use the Book Now button on a movie card to open the booking page.',true)); return; }
+  try {
+    const me = await api('/api/me');
+    if (me.user?.role !== 'customer') { location.replace('/'); return; }
+    if (!me.profileComplete) { location.replace('/profile.html'); return; }
+    const data = await api(`/api/booking/shows?movie_id=${encodeURIComponent(movieId)}`);
+    if (!data.movie) throw new Error('The server did not return movie details. Restart the updated server.js and try again.');
+    movie = data.movie; shows = Array.isArray(data.shows) ? data.shows : []; scheduledShowCount = Number(data.scheduled_show_count || 0);
+    renderMovie(); renderShows();
+  } catch (error) {
+    notify(error.message || 'Unable to load booking details.','error'); $('shows').replaceChildren(emptyBlock('Could not load showtimes','Check that the updated server.js is running and the database connection is active, then refresh this page.',true));
+  }
+}
+init();
+</script>
+</body>
+</html>

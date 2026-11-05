@@ -1,0 +1,2292 @@
+STEP 1 — Install PostgreSQL and connect using pgAdmin 4
+
+PostgreSQL + pgAdmin 4
+Windows · Local database · No cloud required
+
+
+What you'll achieve: PostgreSQL will be installed on your laptop, pgAdmin will connect to it, and you will be able to expand the server and view the default database.
+
+Sub-step 1.1 — Download PostgreSQL
+Estimated download: several hundred MB, depending on the installer version.
+
+1. Open the official PostgreSQL download page:
+
+Download PostgreSQL for Windows
+
+2. Click Download the installer. This redirects you to the EnterpriseDB (EDB) installer.
+
+3. Select PostgreSQL 18, choosing the latest stable release available for 64-bit Windows. Avoid release-candidate versions.
+
+PostgreSQL's Windows installer includes the database server, pgAdmin 4, and Stack Builder. You do not need to download pgAdmin separately when using this installer. 
+PostgreSQL
+
+Sub-step 1.2 — Install PostgreSQL
+Locate the downloaded .exe file in your Downloads folder.
+1. Double-click the installer.
+2. Click Next.
+3. Choose the installation directory. Keep the default location unless you have a specific reason to change it.
+Example:
+
+C:\Program Files\PostgreSQL\18\
+
+4. On the Select Components screen, select these components:
+   
+[x] PostgreSQL Server
+[x] pgAdmin 4
+[x] Command Line Tools
+
+Stack Builder is optional. You can leave it selected or skip it if the installer allows.
+
+
+Make sure PostgreSQL Server and pgAdmin 4 are selected. The command-line tools will also be useful later.
+
+5. Click Next through the remaining directory screens.
+Sub-step 1.3 — Set your PostgreSQL password
+This is the most important part of the installation.
+
+The installer will ask for a password for the default database superuser, named postgres.
+
+Choose a strong password that you can retrieve later. Do not leave it blank.
+
+For example, use a unique password format such as:
+
+CinemaDB@2026!YourOwnCode
+
+This is only an example. Create your own password rather than copying it.
+Save this information somewhere secure
+
+Database username: postgres
+
+Database password: the password you created
+
+
+You will need this same database password when connecting pgAdmin and configuring Node.js later. Do not share it publicly or commit it to GitHub.
+
+Continue through the remaining screens:
+Installer screen	What to choose
+Port	5432
+Advanced options / Locale	Default selection
+Pre-installation summary	Review your choices
+Ready to install	Click Next or Install
+
+Wait for the installation to finish, then click Finish.
+
+If the installer offers to launch Stack Builder, you can skip it for this project. We do not need additional packages at this stage.
+Sub-step 1.4 — Open pgAdmin 4
+1. Press the Windows key.
+2. Search for pgAdmin 4.
+3. Open the application.
+4. If asked to create a pgAdmin master password, create and save one.
+Important: the pgAdmin master password is separate from the PostgreSQL postgres account password. The master password protects saved connection credentials inside pgAdmin. 
+pgAdmin 4 9.18 documentation
+
+
+Wait for pgAdmin to finish loading.
+
+You should see an interface with a navigation panel on the left containing Servers.
+Sub-step 1.5 — Expand the Servers option
+In the left-hand navigation panel, locate:
+Servers
+
+PostgreSQL 18 — example server name
+
+The actual name may be different or the server entry may not exist yet.
+
+
+Click the arrow next to Servers.
+If a PostgreSQL server is already listed
+Click the arrow next to that server. If prompted for the database password, enter the password you created in Sub-step 1.3.
+
+Select Save Password if you want pgAdmin to remember it on this laptop.
+If no PostgreSQL server is listed
+Register the connection manually:
+1. Right-click Servers.
+2. Select Register → Server.
+A dialog with General and Connection tabs will open.
+
+3. In the General tab, enter:
+   
+Name
+
+Local PostgreSQL 18
+
+
+4. Open the Connection tab and fill in the following details:
+Field	Value
+Host name/address	localhost
+Port	5432
+Maintenance database	postgres
+Username	postgres
+Password	Your installation password
+Save password?	Checked, if desired
+
+These are the standard local connection settings for the default PostgreSQL installation. 
+EDB
+
+
+5. Click Save.
+Sub-step 1.6 — Verify the connection and expand the database
+Once connected, expand the tree in the left panel until you can see:
+Local PostgreSQL 18
+
+Databases
+
+Login/Group Roles
+
+Tablespaces
+
+
+Your server name may differ. These objects are shown to illustrate the expected navigation tree.
+
+Now:
+1. Click the arrow beside Databases.
+2. Look for the default postgres database.
+3. Click the arrow beside postgres to expand it.
+Stop here. Do not create the CINÉVERSE database yet. That will be part of our next step.
+
+A successful connection should show a green connection status message in pgAdmin. 
+pgAdmin 4 9.18 documentation
+
+If the server does not connect
+Try this basic check before changing any settings:
+1. Press Win + R.
+2. Type services.msc and press Enter.
+3. Find a service named something like postgresql-x64-18.
+4. Check that its status is Running. If it is stopped, right-click it and choose Start.
+5. Return to pgAdmin and try connecting again.
+
+STEP 2 — Create the CINÉVERSE database in pgAdmin 4.
+
+In this step, we'll create the empty PostgreSQL database that will store all our movie-booking application data. We will not create tables yet; that will be our next step.
+Sub-step 2.1 — Open your connected server
+Open pgAdmin 4 and expand the left-side tree:
+1. Expand Servers.
+2. Expand your PostgreSQL server.
+3. Expand Databases.
+You should see the default postgres database.
+Sub-step 2.2 — Create a new database
+1. Right-click Databases.
+2. Select Create → Database…
+3. A dialog box will appear.
+Enter these details in the General tab:
+Field	Value
+Database	cineverse_db
+Owner	postgres
+
+Keep the other settings at their defaults.
+Database name — copy this exactly
+cineverse_db
+ Copy
+
+4. Click Save.
+Sub-step 2.3 — Verify the database was created
+In the left-side panel:
+1. Right-click Databases and select Refresh if necessary.
+2. Look for cineverse_db.
+3. Expand it using the arrow beside its name.
+You should see folders such as Schemas, Extensions, and other database objects. The database will be empty of our application tables for now—that is expected.
+
+Your structure should look something like this:
+Servers
+└── PostgreSQL
+    └── Databases
+        ├── postgres
+        └── cineverse_db
+            └── Schemas
+                └── public
+
+STEP 3 — Create the database tables and initial cinema screens
+Now we'll create the database structure for CINÉVERSE in pgAdmin 4.
+
+We'll keep the database organized but appropriate for a college mini-project. We'll use one main SQL script instead of manually creating every table through multiple forms.
+
+By the end of this step, you will have 9 tables and 3 screens with 20 seats each.
+Sub-step 3.1 — Open the Query Tool
+1. Open pgAdmin 4.
+2. Expand Servers → PostgreSQL → Databases.
+3. Click cineverse_db to select it.
+4. Right-click cineverse_db.
+5. Click Query Tool.
+A SQL editor should open. This is where we'll execute our database commands.
+Sub-step 3.2 — Copy the SQL script
+Copy the entire script below and paste it into the Query Tool.
+
+This script creates the tables for accounts, movies, screens, seats, shows, bookings, and payments. It also inserts the three initial screens and their seating layouts.
+
+-- ============================================
+-- CINEVERSE MOVIE BOOKING SYSTEM
+-- STEP 3: DATABASE TABLES AND INITIAL SCREENS
+-- ============================================
+
+-- 1. USERS: Customers and administrators
+CREATE TABLE IF NOT EXISTS users (
+    user_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    full_name VARCHAR(100),
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    date_of_birth DATE,
+    phone VARCHAR(20),
+    role VARCHAR(20) NOT NULL DEFAULT 'customer'
+        CHECK (role IN ('customer', 'admin')),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2. MOVIES: Movie information
+CREATE TABLE IF NOT EXISTS movies (
+    movie_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    title VARCHAR(200) NOT NULL,
+    poster_path TEXT,
+    genre VARCHAR(100),
+    language VARCHAR(50),
+    cast_members TEXT,
+    plot TEXT,
+    imdb_rating NUMERIC(3,1)
+        CHECK (imdb_rating BETWEEN 0 AND 10),
+    release_date DATE,
+    status VARCHAR(20) NOT NULL DEFAULT 'upcoming'
+        CHECK (status IN ('now_showing', 'upcoming', 'inactive')),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 3. SCREENS: Cinema screen configuration and pricing
+CREATE TABLE IF NOT EXISTS screens (
+    screen_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    screen_name VARCHAR(50) NOT NULL UNIQUE,
+    capacity INTEGER NOT NULL CHECK (capacity > 0),
+    silver_price NUMERIC(10,2) NOT NULL DEFAULT 99
+        CHECK (silver_price >= 0),
+    gold_price NUMERIC(10,2) NOT NULL DEFAULT 199
+        CHECK (gold_price >= 0),
+    platinum_price NUMERIC(10,2) NOT NULL DEFAULT 299
+        CHECK (platinum_price >= 0),
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 4. SEATS: Physical seats belonging to each screen
+CREATE TABLE IF NOT EXISTS seats (
+    seat_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    screen_id INTEGER NOT NULL
+        REFERENCES screens(screen_id) ON DELETE CASCADE,
+    seat_number VARCHAR(10) NOT NULL,
+    seat_class VARCHAR(20) NOT NULL
+        CHECK (seat_class IN ('silver', 'gold', 'platinum')),
+    UNIQUE (screen_id, seat_number)
+);
+
+-- 5. SHOWS: Movie, screen, date and time
+CREATE TABLE IF NOT EXISTS shows (
+    show_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    movie_id INTEGER NOT NULL REFERENCES movies(movie_id),
+    screen_id INTEGER NOT NULL REFERENCES screens(screen_id),
+    show_date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'scheduled'
+        CHECK (status IN ('scheduled', 'cancelled')),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CHECK (end_time > start_time),
+    UNIQUE (screen_id, show_date, start_time)
+);
+
+-- 6. SHOW_SEATS: Availability and price for each seat at each show
+CREATE TABLE IF NOT EXISTS show_seats (
+    show_seat_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    show_id INTEGER NOT NULL REFERENCES shows(show_id),
+    seat_id INTEGER NOT NULL REFERENCES seats(seat_id),
+    seat_status VARCHAR(20) NOT NULL DEFAULT 'available'
+        CHECK (
+            seat_status IN ('available', 'booked', 'cinema_reserved')
+        ),
+    price NUMERIC(10,2) NOT NULL CHECK (price >= 0),
+    UNIQUE (show_id, seat_id)
+);
+
+-- 7. BOOKINGS: Customer and counter bookings
+CREATE TABLE IF NOT EXISTS bookings (
+    booking_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    booking_code VARCHAR(40) NOT NULL UNIQUE,
+    show_id INTEGER NOT NULL REFERENCES shows(show_id),
+    user_id INTEGER REFERENCES users(user_id),
+    booking_type VARCHAR(20) NOT NULL DEFAULT 'online'
+        CHECK (booking_type IN ('online', 'counter')),
+    customer_name VARCHAR(100) NOT NULL,
+    customer_phone VARCHAR(20),
+    booking_status VARCHAR(20) NOT NULL DEFAULT 'pending'
+        CHECK (
+            booking_status IN ('pending', 'confirmed', 'failed', 'cancelled')
+        ),
+    total_amount NUMERIC(10,2) NOT NULL DEFAULT 0
+        CHECK (total_amount >= 0),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 8. BOOKING_SEATS: Seats allocated to a booking
+CREATE TABLE IF NOT EXISTS booking_seats (
+    booking_seat_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    booking_id INTEGER NOT NULL
+        REFERENCES bookings(booking_id),
+    show_seat_id INTEGER NOT NULL
+        REFERENCES show_seats(show_seat_id),
+    seat_price NUMERIC(10,2) NOT NULL CHECK (seat_price >= 0),
+    is_active BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+-- Prevent the same show-seat from being assigned
+-- to multiple active booking records.
+CREATE UNIQUE INDEX IF NOT EXISTS
+    uq_booking_seats_one_active_booking
+ON booking_seats(show_seat_id)
+WHERE is_active = TRUE;
+
+-- 9. PAYMENTS: Simulated payment records
+CREATE TABLE IF NOT EXISTS payments (
+    payment_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    booking_id INTEGER NOT NULL REFERENCES bookings(booking_id),
+    payment_method VARCHAR(20) NOT NULL
+        CHECK (payment_method IN ('upi', 'card', 'counter')),
+    payment_status VARCHAR(20) NOT NULL DEFAULT 'initiated'
+        CHECK (payment_status IN ('initiated', 'successful', 'failed')),
+    amount NUMERIC(10,2) NOT NULL CHECK (amount >= 0),
+    transaction_reference VARCHAR(100) UNIQUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    paid_at TIMESTAMPTZ
+);
+
+-- ============================================
+-- INITIAL CINEMA: THREE SCREENS
+-- ============================================
+
+INSERT INTO screens (
+    screen_name,
+    capacity,
+    silver_price,
+    gold_price,
+    platinum_price
+)
+VALUES
+    ('Screen 1', 20, 99, 199, 299),
+    ('Screen 2', 20, 99, 199, 299),
+    ('Screen 3', 20, 99, 199, 299)
+ON CONFLICT (screen_name) DO NOTHING;
+
+-- ============================================
+-- INITIAL SEATING LAYOUT FOR ALL THREE SCREENS
+--
+-- Row A: 5 Silver seats       - Rs. 99 each
+-- Rows B and C: 10 Gold seats - Rs. 199 each
+-- Row D: 5 Platinum seats     - Rs. 299 each
+-- ============================================
+
+INSERT INTO seats (screen_id, seat_number, seat_class)
+SELECT s.screen_id, v.seat_number, v.seat_class
+FROM screens AS s
+CROSS JOIN (
+    VALUES
+        ('A1', 'silver'),
+        ('A2', 'silver'),
+        ('A3', 'silver'),
+        ('A4', 'silver'),
+        ('A5', 'silver'),
+
+        ('B1', 'gold'),
+        ('B2', 'gold'),
+        ('B3', 'gold'),
+        ('B4', 'gold'),
+        ('B5', 'gold'),
+
+        ('C1', 'gold'),
+        ('C2', 'gold'),
+        ('C3', 'gold'),
+        ('C4', 'gold'),
+        ('C5', 'gold'),
+
+        ('D1', 'platinum'),
+        ('D2', 'platinum'),
+        ('D3', 'platinum'),
+        ('D4', 'platinum'),
+        ('D5', 'platinum')
+) AS v(seat_number, seat_class)
+WHERE s.screen_name IN ('Screen 1', 'Screen 2', 'Screen 3')
+ON CONFLICT (screen_id, seat_number) DO NOTHING;
+
+
+
+Sub-step 3.3 — Execute the script
+1. Check that the selected database is cineverse_db.
+2. Paste the complete script into the Query Tool.
+3. Click the Execute Script button (the play/ lightning-style execute control), or press F5.
+4. Wait for the execution to finish.
+You should see messages indicating that the tables and index were created and the initial screen and seat records were inserted. Some commands may report that objects already exist if you run the script again; that is okay.
+
+If you see a red error message, stop and send me its exact text rather than making random changes.
+Sub-step 3.4 — Verify the tables
+In the left navigation panel, expand:
+
+Servers → PostgreSQL → Databases → cineverse_db → Schemas → public → Tables
+
+Right-click Tables and select Refresh.
+
+You should see these nine tables:
+Table	What it stores
+users	Customer and admin accounts
+movies	Movie information
+screens	Screen capacities and ticket prices
+seats	The 20 physical seats per screen
+shows	Movie screening schedules
+show_seats	Show-specific seat availability and prices
+bookings	Online and counter bookings
+booking_seats	Seats associated with bookings
+payments	Simulated payment transactions
+
+Sub-step 3.5 — Confirm the three screens and their seats
+In the Query Tool, run this verification query:
+SELECT
+    sc.screen_name,
+    sc.capacity,
+    COUNT(se.seat_id) AS actual_seat_count,
+    COUNT(se.seat_id) FILTER (
+        WHERE se.seat_class = 'silver'
+    ) AS silver_seats,
+    COUNT(se.seat_id) FILTER (
+        WHERE se.seat_class = 'gold'
+    ) AS gold_seats,
+    COUNT(se.seat_id) FILTER (
+        WHERE se.seat_class = 'platinum'
+    ) AS platinum_seats
+FROM screens AS sc
+LEFT JOIN seats AS se ON se.screen_id = sc.screen_id
+GROUP BY sc.screen_id, sc.screen_name, sc.capacity
+ORDER BY sc.screen_id;
+
+
+The expected results are:
+Screen	Capacity	Actual seats	Silver	Gold	Platinum
+Screen 1	20	20	5	10	5
+Screen 2	20	20	5	10	5
+Screen 3	20	20	5	10	5
+
+Your initial seating configuration is now in the database. We haven't created movies, scheduled shows, or customer bookings yet, so those tables will remain empty.
+
+One useful detail: The database stores individual seats separately from show-specific seat availability. That way, booking A1 for one show won't automatically book A1 for every other show.
+
+STEP 4 — Set up the Node.js project and connect PostgreSQL
+
+Goal for this step
+
+Create the project, install dependencies, configure the database connection, and test it locally.
+
+
+We'll use one main server.js file for now, rather than creating multiple route files.
+
+Sub-step 4.1 — Check whether Node.js is installed
+Open VS Code.
+1. Click Terminal → New Terminal in the top menu.
+2. In the terminal at the bottom, run:
+node -v
+
+
+3. Then run:
+npm -v
+
+
+If both commands display version numbers, Node.js and npm are ready. Skip directly to Sub-step 4.3.
+If Node.js is not installed
+Open the official download page:
+
+Download Node.js
+
+Download the Windows installer (.msi) for the Node.js 24 LTS release. Node.js 26 has also entered LTS, but Node.js 24 is a sensible, established choice for this project and its dependencies. 
+Node.js Releases+1
+
+
+Run the installer, retain the default settings, and complete installation. Then close and reopen VS Code and repeat both version commands.
+Sub-step 4.2 — Create the project folder
+Create a folder on your computer. For example:
+D:\CINEVERSE
+
+
+Use your preferred drive if D: is unavailable.
+
+In VS Code:
+1. Select File → Open Folder.
+2. Choose the CINEVERSE folder.
+3. Open Terminal → New Terminal.
+Confirm the terminal is working inside your project directory.
+Sub-step 4.3 — Initialize the project
+Run these commands one at a time in the VS Code terminal:
+npm init -y
+
+
+This creates package.json, which records the project's configuration and dependencies.
+
+Next, install the three packages we need right now:
+npm install express pg dotenv
+
+
+Their purposes are:
+Package	Purpose
+express	Runs our local web server
+pg	Connects Node.js to PostgreSQL
+dotenv	Loads database credentials from a configuration file
+
+Allow the installation to finish. An internet connection is needed for this initial package download, but the app can run locally afterward.
+Sub-step 4.4 — Create the environment file
+In the VS Code Explorer on the left, click New File and create:
+
+.env
+
+Make sure the filename is exactly .env, without a .txt extension.
+
+Paste the following into it:
+PORT=3000
+
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=cineverse_db
+DB_USER=postgres
+DB_PASSWORD=YOUR_POSTGRES_PASSWORD
+
+
+Replace YOUR_POSTGRES_PASSWORD with the password you created when installing PostgreSQL.
+
+For example, if your PostgreSQL password is MySecret@123, the line becomes:
+DB_PASSWORD=MySecret@123
+
+
+Use your actual password, not this example.
+
+Security: Never share your password in chat or upload .env to GitHub. It should remain private on your computer.
+Sub-step 4.5 — Create the server file
+Create another file in the project root named:
+
+server.js
+
+Paste this complete code into it:
+
+const express = require("express");
+const { Pool } = require("pg");
+require("dotenv").config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// PostgreSQL connection configuration
+const pool = new Pool({
+    host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT || 5432),
+    database: process.env.DB_NAME,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD
+});
+
+// Parse incoming JSON requests
+app.use(express.json());
+
+// Basic home page to confirm the server is running
+app.get("/", (req, res) => {
+    res.send(`
+        <h1>CINEVERSE</h1>
+        <p>Movie booking application server is running.</p>
+        <p>Visit <a href="/api/db-test">/api/db-test</a>
+        to test the database connection.</p>
+    `);
+});
+
+// Test the PostgreSQL connection
+app.get("/api/db-test", async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT
+                current_database() AS database_name,
+                current_user AS database_user,
+                NOW() AS server_time
+        `);
+
+        res.json({
+            success: true,
+            message: "PostgreSQL connection successful!",
+            database: result.rows[0].database_name,
+            user: result.rows[0].database_user,
+            serverTime: result.rows[0].server_time
+        });
+    } catch (error) {
+        console.error("Database connection error:", error.message);
+
+        res.status(500).json({
+            success: false,
+            message: "Database connection failed.",
+            error: error.message
+        });
+    }
+});
+
+// Start the local server
+app.listen(PORT, () => {
+    console.log(`CINEVERSE server running at http://localhost:${PORT}`);
+});
+
+
+
+Save the file using Ctrl + S.
+Sub-step 4.6 — Create a .gitignore file
+Create a file named .gitignore in the same project folder and paste:
+node_modules/
+.env
+
+
+This keeps installed packages and your database password out of future Git commits.
+Sub-step 4.7 — Start the server
+In the VS Code terminal, run:
+node server.js
+
+
+You should see:
+CINEVERSE server running at http://localhost:3000
+
+
+Keep this terminal open while testing. The server stops when you terminate the process.
+Sub-step 4.8 — Test the connection
+Open your browser and visit:
+
+http://localhost:3000/api/db-test
+
+When everything is configured correctly, the browser should display a response similar to this:
+{
+  "success": true,
+  "message": "PostgreSQL connection successful!",
+  "database": "cineverse_db",
+  "user": "postgres",
+  "serverTime": "..."
+}
+
+
+The timestamp will contain the actual database server time.
+
+This confirms that Node.js has connected to the database you created in pgAdmin.
+
+If you receive an error, don't change random settings. Check that the PostgreSQL service is running and that the .env values match your installation. You can send me the exact error, but redact any passwords or other secrets.
+
+
+STEP 5 — Configure the admin account using .env
+
+Admin account setup
+
+No additional folders or admin script required.
+
+
+We'll modify only the existing .env and server.js files and install one package.
+
+Sub-step 5.1 — Install the password-hashing package
+Open VS Code and its terminal inside your CINEVERSE project folder.
+
+Run:
+npm install bcryptjs
+
+
+This package allows us to store a hashed password in PostgreSQL instead of storing the actual password in the users table.
+Sub-step 5.2 — Update your .env file
+Open your existing .env file.
+
+Keep your current database configuration and add the following three lines at the bottom:
+ADMIN_NAME=CINEVERSE Admin
+ADMIN_EMAIL=admin@movies.com
+ADMIN_PASSWORD=Admin@123
+
+
+Your .env should now contain the database settings from Step 4 plus these admin settings.
+
+The credentials you've specified are:
+Admin login email
+
+admin@movies.com
+
+ Copy
+
+Admin password
+
+Admin@123
+
+ Copy
+
+These are development credentials for your offline project. The password is relatively weak, so replace it before using this design anywhere beyond a local demonstration.
+
+Important: Keep .env listed in .gitignore. Although your application is local, you shouldn't expose the credentials by uploading this file to GitHub.
+Sub-step 5.3 — Update your existing server.js
+We won't create create-admin.js or any additional folders.
+
+Instead, we'll make server.js automatically create the admin account when the application starts, but only if the account doesn't already exist.
+
+Open server.js, select all its existing contents, and replace them with this complete code:
+
+const express = require("express");
+const { Pool } = require("pg");
+const bcrypt = require("bcryptjs");
+require("dotenv").config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// PostgreSQL database connection
+const pool = new Pool({
+    host: process.env.DB_HOST || "localhost",
+    port: Number(process.env.DB_PORT || 5432),
+    database: process.env.DB_NAME || "cineverse_db",
+    user: process.env.DB_USER || "postgres",
+    password: process.env.DB_PASSWORD
+});
+
+// Parse JSON requests
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Test/home page
+app.get("/", (req, res) => {
+    res.send(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>CINEVERSE</title>
+        </head>
+        <body>
+            <h1>CINEVERSE</h1>
+            <p>Your movie booking project server is running.</p>
+            <a href="/api/db-test">Test database connection</a>
+        </body>
+        </html>
+    `);
+});
+
+// Database connection test
+app.get("/api/db-test", async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT
+                current_database() AS database_name,
+                current_user AS database_user
+        `);
+
+        res.json({
+            success: true,
+            message: "PostgreSQL connection successful!",
+            database: result.rows[0].database_name,
+            user: result.rows[0].database_user
+        });
+    } catch (error) {
+        console.error("Database error:", error.message);
+
+        res.status(500).json({
+            success: false,
+            message: "Database connection failed."
+        });
+    }
+});
+
+// Create the initial administrator if one does not exist
+async function ensureAdminAccount() {
+    const name = process.env.ADMIN_NAME;
+    const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+    const password = process.env.ADMIN_PASSWORD;
+
+    if (!name || !email || !password) {
+        throw new Error(
+            "ADMIN_NAME, ADMIN_EMAIL and ADMIN_PASSWORD must be set in .env"
+        );
+    }
+
+    const existing = await pool.query(
+        "SELECT user_id, role FROM users WHERE email = $1",
+        [email]
+    );
+
+    if (existing.rows.length > 0) {
+        if (existing.rows[0].role !== "admin") {
+            throw new Error(
+                "The configured admin email belongs to a non-admin account."
+            );
+        }
+
+        console.log("Admin account already exists.");
+        return;
+    }
+
+    // Hash the password before inserting it into the database.
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    await pool.query(
+        `INSERT INTO users
+            (full_name, email, password_hash, role)
+         VALUES ($1, $2, $3, 'admin')`,
+        [name, email, passwordHash]
+    );
+
+    console.log("Initial admin account created successfully.");
+}
+
+// Start only after checking the database and admin setup
+async function startServer() {
+    try {
+        await pool.query("SELECT 1");
+        console.log("PostgreSQL connected successfully.");
+
+        await ensureAdminAccount();
+
+        app.listen(PORT, () => {
+            console.log(
+                `CINEVERSE running at http://localhost:${PORT}`
+            );
+        });
+    } catch (error) {
+        console.error("Startup failed:", error.message);
+        await pool.end();
+        process.exitCode = 1;
+    }
+}
+
+startServer();
+
+
+
+Save the file using Ctrl + S.
+What this code does
+1. Connects to your existing cineverse_db database.
+2. Checks whether admin@movies.com exists in the users table.
+3. If it doesn't exist, hashes Admin@123 and creates the administrator account.
+4. If the admin already exists, it leaves the existing account and password unchanged.
+5. Starts the server only after the database and admin setup succeed.
+This means restarting the server won't create duplicate administrator accounts or silently reset the password.
+Sub-step 5.4 — Start the application
+In your VS Code terminal, run:
+node server.js
+
+
+Expected terminal output on the first successful run:
+PostgreSQL connected successfully.
+Initial admin account created successfully.
+CINEVERSE running at http://localhost:3000
+
+
+If the admin account was already created during an earlier attempt, you'll instead see:
+PostgreSQL connected successfully.
+Admin account already exists.
+CINEVERSE running at http://localhost:3000
+
+
+Both results are fine.
+Sub-step 5.5 — Verify the account in pgAdmin 4
+Open pgAdmin and select your cineverse_db database.
+
+Open Tools → Query Tool and execute:
+SELECT
+    user_id,
+    full_name,
+    email,
+    role,
+    created_at
+FROM users
+WHERE email = 'admin@movies.com';
+
+
+You should find one row containing:
+Field	Expected value
+full_name	CINEVERSE Admin
+email	admin@movies.com
+role	admin
+user_id	Automatically generated ID
+
+The password is not displayed because the database stores its hash in password_hash.
+
+Note: We haven't implemented the login page yet. This step only prepares the admin account in the database. Later, both customer and admin logins will be checked against their database records, using password-hash verification and role-based access.
+
+STEP 6 - SESSIONS BASED ON USER OR AMDIN 
+
+Sub-step 6.1 — Install the session package
+Open your project in VS Code and open Terminal → New Terminal.
+
+Run:
+npm install express-session
+
+
+We already installed bcryptjs in Step 5. We'll use it to verify hashed passwords.
+
+express-session will maintain a login session so the application knows which customer or administrator is signed in. For now, the sessions will be stored in memory, which is suitable for our local development project. Restarting the server will sign users out.
+Sub-step 6.2 — Add a session secret to .env
+Open your existing .env file.
+
+Keep all your existing database and admin settings. Add one more line:
+SESSION_SECRET=REPLACE_WITH_RANDOM_SECRET
+
+
+Generate a random secret by running this command in the VS Code terminal:
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+
+
+Copy the generated value and replace REPLACE_WITH_RANDOM_SECRET with it.
+
+Your .env will contain these settings, alongside your existing configuration:
+PORT=3000
+
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=cineverse_db
+DB_USER=postgres
+DB_PASSWORD=YOUR_POSTGRES_PASSWORD
+
+ADMIN_NAME=CINEVERSE Admin
+ADMIN_EMAIL=admin@movies.com
+ADMIN_PASSWORD=Admin@123
+
+SESSION_SECRET=PASTE_YOUR_GENERATED_SECRET_HERE
+
+
+Replace the database password and session secret placeholders with your actual values. Keep .env in .gitignore.
+Sub-step 6.3 — Update server.js
+We'll now replace your existing server.js with a version that supports the authentication workflow.
+
+It will provide these API endpoints:
+Endpoint	Purpose
+POST /api/register	Create a customer account
+POST /api/login	Authenticate a customer or admin
+GET /api/me	Retrieve the currently signed-in user's details
+POST /api/profile	Save the customer's name, birthday, and phone
+POST /api/logout	End the current login session
+GET /api/admin/status	Verify that an authenticated user has the admin role
+GET /api/db-test	Test the database connection
+
+Open server.js, select all the existing code, and replace it with the following.
+
+const express = require("express");
+const { Pool } = require("pg");
+const bcrypt = require("bcryptjs");
+const session = require("express-session");
+require("dotenv").config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// ------------------------------------------
+// 1. DATABASE CONNECTION
+// ------------------------------------------
+
+const pool = new Pool({
+    host: process.env.DB_HOST || "localhost",
+    port: Number(process.env.DB_PORT || 5432),
+    database: process.env.DB_NAME || "cineverse_db",
+    user: process.env.DB_USER || "postgres",
+    password: process.env.DB_PASSWORD
+});
+
+// ------------------------------------------
+// 2. MIDDLEWARE
+// ------------------------------------------
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+if (!process.env.SESSION_SECRET) {
+    console.error("SESSION_SECRET is missing from .env");
+    process.exit(1);
+}
+
+app.use(session({
+    name: "cineverse.sid",
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: false, // Local HTTP development only
+        sameSite: "lax",
+        maxAge: 2 * 60 * 60 * 1000
+    }
+}));
+
+// ------------------------------------------
+// 3. SESSION AND ROLE HELPERS
+// ------------------------------------------
+
+function startUserSession(req, user) {
+    return new Promise((resolve, reject) => {
+        req.session.regenerate((error) => {
+            if (error) {
+                return reject(error);
+            }
+
+            req.session.user = {
+                user_id: user.user_id,
+                email: user.email,
+                full_name: user.full_name,
+                role: user.role,
+                date_of_birth: user.date_of_birth,
+                phone: user.phone
+            };
+
+            req.session.save((saveError) => {
+                if (saveError) {
+                    return reject(saveError);
+                }
+
+                resolve();
+            });
+        });
+    });
+}
+
+function requireLogin(req, res, next) {
+    if (!req.session.user) {
+        return res.status(401).json({
+            success: false,
+            message: "Please log in first."
+        });
+    }
+
+    next();
+}
+
+function requireAdmin(req, res, next) {
+    if (!req.session.user || req.session.user.role !== "admin") {
+        return res.status(403).json({
+            success: false,
+            message: "Administrator access required."
+        });
+    }
+
+    next();
+}
+
+function isProfileComplete(user) {
+    return Boolean(
+        user.full_name &&
+        user.date_of_birth &&
+        user.phone
+    );
+}
+
+// ------------------------------------------
+// 4. BASIC HOME PAGE AND DATABASE TEST
+// ------------------------------------------
+
+app.get("/", (req, res) => {
+    res.send(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>CINEVERSE</title>
+        </head>
+        <body>
+            <h1>CINEVERSE</h1>
+            <p>Movie booking application server is running.</p>
+            <a href="/api/db-test">Test database connection</a>
+        </body>
+        </html>
+    `);
+});
+
+app.get("/api/db-test", async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT
+                current_database() AS database_name,
+                current_user AS database_user
+        `);
+
+        res.json({
+            success: true,
+            database: result.rows[0].database_name,
+            user: result.rows[0].database_user
+        });
+    } catch (error) {
+        console.error("Database test failed:", error.message);
+
+        res.status(500).json({
+            success: false,
+            message: "Database connection failed."
+        });
+    }
+});
+
+// ------------------------------------------
+// 5. CUSTOMER REGISTRATION
+// ------------------------------------------
+
+// Customers register with email and password first.
+// Their profile details are collected after registration.
+
+app.post("/api/register", async (req, res) => {
+    try {
+        const email = String(req.body.email || "")
+            .trim()
+            .toLowerCase();
+
+        const password = req.body.password;
+
+        if (
+            !email ||
+            typeof password !== "string" ||
+            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Enter a valid email and password."
+            });
+        }
+
+        if (password.length < 8 || password.length > 72) {
+            return res.status(400).json({
+                success: false,
+                message: "Password must contain 8 to 72 characters."
+            });
+        }
+
+        const passwordHash = await bcrypt.hash(password, 12);
+
+        const result = await pool.query(
+            `INSERT INTO users (email, password_hash, role)
+             VALUES ($1, $2, 'customer')
+             RETURNING user_id, email, full_name, role,
+                       date_of_birth, phone`,
+            [email, passwordHash]
+        );
+
+        const user = result.rows[0];
+
+        await startUserSession(req, user);
+
+        res.status(201).json({
+            success: true,
+            message: "Account created. Complete your profile next.",
+            requiresProfile: true,
+            role: user.role
+        });
+    } catch (error) {
+        if (error.code === "23505") {
+            return res.status(409).json({
+                success: false,
+                message: "An account with this email already exists."
+            });
+        }
+
+        console.error("Registration failed:", error.message);
+
+        res.status(500).json({
+            success: false,
+            message: "Registration failed. Please try again."
+        });
+    }
+});
+
+// ------------------------------------------
+// 6. CUSTOMER AND ADMIN LOGIN
+// ------------------------------------------
+
+app.post("/api/login", async (req, res) => {
+    try {
+        const email = String(req.body.email || "")
+            .trim()
+            .toLowerCase();
+
+        const password = req.body.password;
+
+        if (!email || typeof password !== "string") {
+            return res.status(400).json({
+                success: false,
+                message: "Email and password are required."
+            });
+        }
+
+        const result = await pool.query(
+            `SELECT user_id, email, password_hash, full_name,
+                    role, date_of_birth, phone
+             FROM users
+             WHERE email = $1`,
+            [email]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password."
+            });
+        }
+
+        const user = result.rows[0];
+
+        const passwordMatches = await bcrypt.compare(
+            password,
+            user.password_hash
+        );
+
+        if (!passwordMatches) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password."
+            });
+        }
+
+        await startUserSession(req, user);
+
+        res.json({
+            success: true,
+            message: "Login successful.",
+            role: user.role,
+            requiresProfile:
+                user.role === "customer" &&
+                !isProfileComplete(user),
+            user: {
+                user_id: user.user_id,
+                email: user.email,
+                full_name: user.full_name,
+                role: user.role
+            }
+        });
+    } catch (error) {
+        console.error("Login failed:", error.message);
+
+        res.status(500).json({
+            success: false,
+            message: "Login failed. Please try again."
+        });
+    }
+});
+
+// ------------------------------------------
+// 7. CURRENTLY LOGGED-IN USER
+// ------------------------------------------
+
+app.get("/api/me", requireLogin, (req, res) => {
+    const user = req.session.user;
+
+    res.json({
+        success: true,
+        user: {
+            user_id: user.user_id,
+            email: user.email,
+            full_name: user.full_name,
+            role: user.role,
+            date_of_birth: user.date_of_birth,
+            phone: user.phone
+        },
+        profileComplete: isProfileComplete(user)
+    });
+});
+
+// ------------------------------------------
+// 8. CUSTOMER PROFILE SETUP
+// ------------------------------------------
+
+app.post("/api/profile", requireLogin, async (req, res) => {
+    try {
+        const user = req.session.user;
+
+        if (user.role !== "customer") {
+            return res.status(403).json({
+                success: false,
+                message: "This profile form is for customers."
+            });
+        }
+
+        const fullName = String(req.body.fullName || "").trim();
+        const dateOfBirth = String(req.body.dateOfBirth || "").trim();
+        const phone = String(req.body.phone || "").trim();
+
+        if (!fullName || fullName.length > 100) {
+            return res.status(400).json({
+                success: false,
+                message: "Enter a name of up to 100 characters."
+            });
+        }
+
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth)) {
+            return res.status(400).json({
+                success: false,
+                message: "Enter a valid date of birth."
+            });
+        }
+
+        const parsedDate = new Date(`${dateOfBirth}T00:00:00Z`);
+
+        if (
+            Number.isNaN(parsedDate.getTime()) ||
+            parsedDate.toISOString().slice(0, 10) !== dateOfBirth ||
+            dateOfBirth > new Date().toISOString().slice(0, 10)
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Date of birth cannot be invalid or in the future."
+            });
+        }
+
+        const phoneDigits = phone.replace(/\D/g, "");
+
+        if (
+            phoneDigits.length < 7 ||
+            phoneDigits.length > 15 ||
+            phone.length > 20
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Enter a valid phone number."
+            });
+        }
+
+        const result = await pool.query(
+            `UPDATE users
+             SET full_name = $1,
+                 date_of_birth = $2,
+                 phone = $3
+             WHERE user_id = $4
+             RETURNING user_id, email, full_name, role,
+                       date_of_birth, phone`,
+            [fullName, dateOfBirth, phone, user.user_id]
+        );
+
+        const updatedUser = result.rows[0];
+
+        req.session.user = {
+            ...req.session.user,
+            full_name: updatedUser.full_name,
+            date_of_birth: updatedUser.date_of_birth,
+            phone: updatedUser.phone
+        };
+
+        res.json({
+            success: true,
+            message: "Profile saved successfully.",
+            profileComplete: true,
+            user: {
+                user_id: updatedUser.user_id,
+                email: updatedUser.email,
+                full_name: updatedUser.full_name,
+                role: updatedUser.role,
+                date_of_birth: updatedUser.date_of_birth,
+                phone: updatedUser.phone
+            }
+        });
+    } catch (error) {
+        console.error("Profile update failed:", error.message);
+
+        res.status(500).json({
+            success: false,
+            message: "Unable to save profile."
+        });
+    }
+});
+
+// ------------------------------------------
+// 9. LOGOUT
+// ------------------------------------------
+
+app.post("/api/logout", requireLogin, (req, res) => {
+    req.session.destroy((error) => {
+        if (error) {
+            return res.status(500).json({
+                success: false,
+                message: "Unable to log out."
+            });
+        }
+
+        res.clearCookie("cineverse.sid", {
+            httpOnly: true,
+            sameSite: "lax",
+            secure: false
+        });
+
+        res.json({
+            success: true,
+            message: "You have logged out successfully."
+        });
+    });
+});
+
+// ------------------------------------------
+// 10. ADMIN-ONLY TEST ENDPOINT
+// ------------------------------------------
+
+app.get(
+    "/api/admin/status",
+    requireLogin,
+    requireAdmin,
+    (req, res) => {
+        res.json({
+            success: true,
+            message: "Administrator authentication verified.",
+            role: req.session.user.role
+        });
+    }
+);
+
+// ------------------------------------------
+// 11. CREATE INITIAL ADMIN IF NECESSARY
+// ------------------------------------------
+
+async function ensureAdminAccount() {
+    const name = process.env.ADMIN_NAME;
+    const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+    const password = process.env.ADMIN_PASSWORD;
+
+    if (!name || !email || !password) {
+        throw new Error(
+            "ADMIN_NAME, ADMIN_EMAIL and ADMIN_PASSWORD must be set in .env"
+        );
+    }
+
+    if (password.length < 8 || password.length > 72) {
+        throw new Error(
+            "Admin password must contain 8 to 72 characters."
+        );
+    }
+
+    const existing = await pool.query(
+        "SELECT user_id, role FROM users WHERE email = $1",
+        [email]
+    );
+
+    if (existing.rows.length > 0) {
+        if (existing.rows[0].role !== "admin") {
+            throw new Error(
+                "The configured admin email belongs to a non-admin account."
+            );
+        }
+
+        console.log("Admin account already exists.");
+        return;
+    }
+
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    await pool.query(
+        `INSERT INTO users
+            (full_name, email, password_hash, role)
+         VALUES ($1, $2, $3, 'admin')`,
+        [name, email, passwordHash]
+    );
+
+    console.log("Initial admin account created successfully.");
+}
+
+// ------------------------------------------
+// 12. START SERVER
+// ------------------------------------------
+
+async function startServer() {
+    try {
+        await pool.query("SELECT 1");
+        console.log("PostgreSQL connected successfully.");
+
+        await ensureAdminAccount();
+
+        app.listen(PORT, () => {
+            console.log(
+                `CINEVERSE running at http://localhost:${PORT}`
+            );
+        });
+    } catch (error) {
+        console.error("Startup failed:", error.message);
+        await pool.end();
+        process.exitCode = 1;
+    }
+}
+
+startServer();
+
+Save using Ctrl + S.
+Sub-step 6.4 — Start the server
+In your first VS Code terminal, run:
+node server.js
+
+
+Expected output:
+PostgreSQL connected successfully.
+Admin account already exists.
+CINEVERSE running at http://localhost:3000
+
+
+The admin message may say Initial admin account created successfully. if the account does not already exist. Both are valid.
+
+Keep this terminal open.
+Sub-step 6.5 — Test the admin login and role
+We will test the API before building the login page.
+
+Open a second terminal in VS Code so the first terminal can continue running the server.
+
+The following commands are for the Windows PowerShell terminal.
+
+First, create a session variable and log in as your admin:
+$adminSession = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+
+$loginBody = @{
+    email = "admin@movies.com"
+    password = "Admin@123"
+} | ConvertTo-Json
+
+Invoke-RestMethod `
+    -Uri "http://localhost:3000/api/login" `
+    -Method Post `
+    -ContentType "application/json" `
+    -Body $loginBody `
+    -WebSession $adminSession
+
+
+The response should include:
+success : True
+message : Login successful.
+role    : admin
+
+
+Now test whether the backend recognises the logged-in administrator:
+Invoke-RestMethod `
+    -Uri "http://localhost:3000/api/admin/status" `
+    -WebSession $adminSession
+
+
+Expected response:
+success : True
+message : Administrator authentication verified.
+role    : admin
+
+
+This confirms that the backend validates the database password hash and identifies the account's role.
+Sub-step 6.6 — Test customer registration and profile setup
+We will now create a sample customer. You may use a different test email if this one already exists in your database.
+
+Run the following in the same second PowerShell terminal:
+$customerSession = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+
+$registerBody = @{
+    email = "student01@example.com"
+    password = "Student@123"
+} | ConvertTo-Json
+
+Invoke-RestMethod `
+    -Uri "http://localhost:3000/api/register" `
+    -Method Post `
+    -ContentType "application/json" `
+    -Body $registerBody `
+    -WebSession $customerSession
+
+
+Expected result:
+success         : True
+requiresProfile : True
+
+
+The customer account is now created, and the browser session is authenticated.
+
+Next, save the sample customer's profile:
+$profileBody = @{
+    fullName = "Demo Student"
+    dateOfBirth = "2002-05-18"
+    phone = "9876543210"
+} | ConvertTo-Json
+
+Invoke-RestMethod `
+    -Uri "http://localhost:3000/api/profile" `
+    -Method Post `
+    -ContentType "application/json" `
+    -Body $profileBody `
+    -WebSession $customerSession
+
+
+Expected result:
+success         : True
+message         : Profile saved successfully.
+profileComplete : True
+
+
+Finally, verify the logged-in customer:
+Invoke-RestMethod `
+    -Uri "http://localhost:3000/api/me" `
+    -WebSession $customerSession
+
+
+You should see the customer's email, name, date of birth, phone number, and role: customer.
+
+These are test values for the local project. Use a different test email on subsequent runs if the account has already been created, because duplicate email registration is intentionally blocked.
+
+What we have accomplished
+Your backend now supports the initial authentication workflow:
+- Customer accounts are registered with email and password.
+- Passwords are hashed before being stored.
+- Duplicate email registration is rejected.
+- Customers can save their profile information.
+- Customers and admins can log in through the same API.
+- The backend determines the user's role from PostgreSQL.
+- Admin-only endpoints reject customer sessions.
+- Users can log out.
+The HTML login, registration, and profile pages are not built in this step. We have prepared and tested the backend first; the pages can then be created directly in the CINEVERSE root folder without adding route or controller folders.
+
+STEP 7 — Frontend setup
+Sub-step 7.1 — Create the frontend folder
+In VS Code, open your existing CINEVERSE project.
+
+In the Explorer panel on the left:
+1. Right-click the main CINEVERSE folder.
+2. Select New Folder.
+3. Name it exactly frontend.
+Your project should look like this:
+CINEVERSE/
+├── frontend/
+├── server.js
+├── package.json
+├── package-lock.json
+├── .env
+└── .gitignore
+
+
+If you already created the frontend folder during the previous attempt, don't create another one. Just confirm that it exists in the correct location.
+
+Step 7 — Sub-step 7.2: Configure Express to serve the frontend folder
+We need to connect your new frontend folder to the existing Node.js server. We'll update server.js while preserving the database connection, admin initialization, login, signup, profile, and session logic from our previous version.
+1. Open server.js
+In VS Code, open the server.js file in your main CINEVERSE folder.
+
+Select all its contents using Ctrl + A. Replace them with this complete updated file.
+const express = require("express");
+const path = require("path");
+const { Pool } = require("pg");
+const bcrypt = require("bcryptjs");
+const session = require("express-session");
+require("dotenv").config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// ==========================================
+// 1. POSTGRESQL DATABASE CONNECTION
+// ==========================================
+
+const pool = new Pool({
+    host: process.env.DB_HOST || "localhost",
+    port: Number(process.env.DB_PORT || 5432),
+    database: process.env.DB_NAME || "cineverse_db",
+    user: process.env.DB_USER || "postgres",
+    password: process.env.DB_PASSWORD
+});
+
+// ==========================================
+// 2. MIDDLEWARE
+// ==========================================
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+if (!process.env.SESSION_SECRET) {
+    console.error("SESSION_SECRET is missing from .env");
+    process.exit(1);
+}
+
+app.use(
+    session({
+        name: "cineverse.sid",
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            httpOnly: true,
+            secure: false, // Local HTTP development only
+            sameSite: "lax",
+            maxAge: 2 * 60 * 60 * 1000
+        }
+    })
+);
+
+// Serve HTML files and other frontend assets from frontend/
+app.use(express.static(path.join(__dirname, "frontend")));
+
+// ==========================================
+// 3. SESSION AND ROLE HELPERS
+// ==========================================
+
+function startUserSession(req, user) {
+    return new Promise((resolve, reject) => {
+        req.session.regenerate((error) => {
+            if (error) {
+                return reject(error);
+            }
+
+            req.session.user = {
+                user_id: user.user_id,
+                email: user.email,
+                full_name: user.full_name,
+                role: user.role,
+                date_of_birth: user.date_of_birth,
+                phone: user.phone
+            };
+
+            req.session.save((saveError) => {
+                if (saveError) {
+                    return reject(saveError);
+                }
+
+                resolve();
+            });
+        });
+    });
+}
+
+function requireLogin(req, res, next) {
+    if (!req.session.user) {
+        return res.status(401).json({
+            success: false,
+            message: "Please log in first."
+        });
+    }
+
+    next();
+}
+
+function requireAdmin(req, res, next) {
+    if (
+        !req.session.user ||
+        req.session.user.role !== "admin"
+    ) {
+        return res.status(403).json({
+            success: false,
+            message: "Administrator access required."
+        });
+    }
+
+    next();
+}
+
+function isProfileComplete(user) {
+    return Boolean(
+        user.full_name &&
+        user.date_of_birth &&
+        user.phone
+    );
+}
+
+// ==========================================
+// 4. DATABASE CONNECTION TEST
+// ==========================================
+
+app.get("/api/db-test", async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT
+                current_database() AS database_name,
+                current_user AS database_user
+        `);
+
+        res.json({
+            success: true,
+            message: "PostgreSQL connection successful!",
+            database: result.rows[0].database_name,
+            user: result.rows[0].database_user
+        });
+    } catch (error) {
+        console.error("Database test failed:", error.message);
+
+        res.status(500).json({
+            success: false,
+            message: "Database connection failed."
+        });
+    }
+});
+
+// ==========================================
+// 5. CUSTOMER REGISTRATION
+// ==========================================
+
+app.post("/api/register", async (req, res) => {
+    try {
+        const email = String(req.body.email || "")
+            .trim()
+            .toLowerCase();
+
+        const password = req.body.password;
+
+        if (
+            !email ||
+            typeof password !== "string" ||
+            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Enter a valid email and password."
+            });
+        }
+
+        if (password.length < 8 || password.length > 72) {
+            return res.status(400).json({
+                success: false,
+                message: "Password must contain 8 to 72 characters."
+            });
+        }
+
+        const passwordHash = await bcrypt.hash(password, 12);
+
+        const result = await pool.query(
+            `INSERT INTO users
+                (email, password_hash, role)
+             VALUES ($1, $2, 'customer')
+             RETURNING user_id, email, full_name, role,
+                       date_of_birth, phone`,
+            [email, passwordHash]
+        );
+
+        const user = result.rows[0];
+
+        await startUserSession(req, user);
+
+        res.status(201).json({
+            success: true,
+            message: "Account created. Complete your profile next.",
+            requiresProfile: true,
+            role: user.role
+        });
+    } catch (error) {
+        if (error.code === "23505") {
+            return res.status(409).json({
+                success: false,
+                message: "An account with this email already exists."
+            });
+        }
+
+        console.error("Registration failed:", error.message);
+
+        res.status(500).json({
+            success: false,
+            message: "Registration failed. Please try again."
+        });
+    }
+});
+
+// ==========================================
+// 6. CUSTOMER AND ADMIN LOGIN
+// ==========================================
+
+app.post("/api/login", async (req, res) => {
+    try {
+        const email = String(req.body.email || "")
+            .trim()
+            .toLowerCase();
+
+        const password = req.body.password;
+
+        if (!email || typeof password !== "string") {
+            return res.status(400).json({
+                success: false,
+                message: "Email and password are required."
+            });
+        }
+
+        const result = await pool.query(
+            `SELECT user_id, email, password_hash, full_name,
+                    role, date_of_birth, phone
+             FROM users
+             WHERE email = $1`,
+            [email]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password."
+            });
+        }
+
+        const user = result.rows[0];
+
+        const passwordMatches = await bcrypt.compare(
+            password,
+            user.password_hash
+        );
+
+        if (!passwordMatches) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password."
+            });
+        }
+
+        await startUserSession(req, user);
+
+        res.json({
+            success: true,
+            message: "Login successful.",
+            role: user.role,
+            requiresProfile:
+                user.role === "customer" &&
+                !isProfileComplete(user),
+            user: {
+                user_id: user.user_id,
+                email: user.email,
+                full_name: user.full_name,
+                role: user.role
+            }
+        });
+    } catch (error) {
+        console.error("Login failed:", error.message);
+
+        res.status(500).json({
+            success: false,
+            message: "Login failed. Please try again."
+        });
+    }
+});
+
+// ==========================================
+// 7. CURRENTLY LOGGED-IN USER
+// ==========================================
+
+app.get("/api/me", requireLogin, (req, res) => {
+    const user = req.session.user;
+
+    res.json({
+        success: true,
+        user: {
+            user_id: user.user_id,
+            email: user.email,
+            full_name: user.full_name,
+            role: user.role,
+            date_of_birth: user.date_of_birth,
+            phone: user.phone
+        },
+        profileComplete: isProfileComplete(user)
+    });
+});
+
+// ==========================================
+// 8. CUSTOMER PROFILE SETUP
+// ==========================================
+
+app.post("/api/profile", requireLogin, async (req, res) => {
+    try {
+        const user = req.session.user;
+
+        if (user.role !== "customer") {
+            return res.status(403).json({
+                success: false,
+                message: "This profile form is for customers."
+            });
+        }
+
+        const fullName = String(req.body.fullName || "").trim();
+        const dateOfBirth = String(req.body.dateOfBirth || "").trim();
+        const phone = String(req.body.phone || "").trim();
+
+        if (!fullName || fullName.length > 100) {
+            return res.status(400).json({
+                success: false,
+                message: "Enter a name of up to 100 characters."
+            });
+        }
+
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth)) {
+            return res.status(400).json({
+                success: false,
+                message: "Enter a valid date of birth."
+            });
+        }
+
+        const parsedDate = new Date(`${dateOfBirth}T00:00:00Z`);
+
+        if (
+            Number.isNaN(parsedDate.getTime()) ||
+            parsedDate.toISOString().slice(0, 10) !== dateOfBirth ||
+            dateOfBirth > new Date().toISOString().slice(0, 10)
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Date of birth cannot be invalid or in the future."
+            });
+        }
+
+        const phoneDigits = phone.replace(/\D/g, "");
+
+        if (
+            phoneDigits.length < 7 ||
+            phoneDigits.length > 15 ||
+            phone.length > 20
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Enter a valid phone number."
+            });
+        }
+
+        const result = await pool.query(
+            `UPDATE users
+             SET full_name = $1,
+                 date_of_birth = $2,
+                 phone = $3
+             WHERE user_id = $4
+             RETURNING user_id, email, full_name, role,
+                       date_of_birth, phone`,
+            [fullName, dateOfBirth, phone, user.user_id]
+        );
+
+        const updatedUser = result.rows[0];
+
+        req.session.user = {
+            ...req.session.user,
+            full_name: updatedUser.full_name,
+            date_of_birth: updatedUser.date_of_birth,
+            phone: updatedUser.phone
+        };
+
+        res.json({
+            success: true,
+            message: "Profile saved successfully.",
+            profileComplete: true,
+            user: {
+                user_id: updatedUser.user_id,
+                email: updatedUser.email,
+                full_name: updatedUser.full_name,
+                role: updatedUser.role,
+                date_of_birth: updatedUser.date_of_birth,
+                phone: updatedUser.phone
+            }
+        });
+    } catch (error) {
+        console.error("Profile update failed:", error.message);
+
+        res.status(500).json({
+            success: false,
+            message: "Unable to save profile."
+        });
+    }
+});
+
+// ==========================================
+// 9. LOGOUT
+// ==========================================
+
+app.post("/api/logout", requireLogin, (req, res) => {
+    req.session.destroy((error) => {
+        if (error) {
+            return res.status(500).json({
+                success: false,
+                message: "Unable to log out."
+            });
+        }
+
+        res.clearCookie("cineverse.sid", {
+            httpOnly: true,
+            sameSite: "lax",
+            secure: false
+        });
+
+        res.json({
+            success: true,
+            message: "You have logged out successfully."
+        });
+    });
+});
+
+// ==========================================
+// 10. ADMIN-ONLY TEST ENDPOINT
+// ==========================================
+
+app.get(
+    "/api/admin/status",
+    requireLogin,
+    requireAdmin,
+    (req, res) => {
+        res.json({
+            success: true,
+            message: "Administrator authentication verified.",
+            role: req.session.user.role
+        });
+    }
+);
+
+// ==========================================
+// 11. INITIAL ADMIN ACCOUNT
+// ==========================================
+
+async function ensureAdminAccount() {
+    const name = process.env.ADMIN_NAME;
+    const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+    const password = process.env.ADMIN_PASSWORD;
+
+    if (!name || !email || !password) {
+        throw new Error(
+            "ADMIN_NAME, ADMIN_EMAIL and ADMIN_PASSWORD must be set in .env"
+        );
+    }
+
+    if (password.length < 8 || password.length > 72) {
+        throw new Error(
+            "Admin password must contain 8 to 72 characters."
+        );
+    }
+
+    const existing = await pool.query(
+        "SELECT user_id, role FROM users WHERE email = $1",
+        [email]
+    );
+
+    if (existing.rows.length > 0) {
+        if (existing.rows[0].role !== "admin") {
+            throw new Error(
+                "The configured admin email belongs to a non-admin account."
+            );
+        }
+
+        console.log("Admin account already exists.");
+        return;
+    }
+
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    await pool.query(
+        `INSERT INTO users
+            (full_name, email, password_hash, role)
+         VALUES ($1, $2, $3, 'admin')`,
+        [name, email, passwordHash]
+    );
+
+    console.log("Initial admin account created successfully.");
+}
+
+// ==========================================
+// 12. START SERVER
+// ==========================================
+
+async function startServer() {
+    try {
+        await pool.query("SELECT 1");
+        console.log("PostgreSQL connected successfully.");
+
+        await ensureAdminAccount();
+
+        app.listen(PORT, () => {
+            console.log(
+                `CINEVERSE running at http://localhost:${PORT}`
+            );
+        });
+    } catch (error) {
+        console.error("Startup failed:", error.message);
+        await pool.end();
+        process.exitCode = 1;
+    }
+}
+
+startServer();
+
+
+2. Save the file
+Press Ctrl + S.
+
+Do not create any other files or folders in this sub-step.
+3. Restart the server
+In the VS Code terminal where the server is running:
+1. Press Ctrl + C.
+2. Run:
+node server.js
+
+
+You should see output similar to:
+PostgreSQL connected successfully.
+Admin account already exists.
+CINEVERSE running at http://localhost:3000
+
+
+The admin message may indicate that the initial account was created if it didn't exist previously.
+
+Because we haven't created index.html yet, the home URL might return a not-found response for now. That is expected. We'll create the page in the next sub-step.
+What changed?
+Only two things:
+- Added Node.js's built-in path module.
+- Configured Express to serve files from frontend/.
+All existing database and authentication APIs have been retained.
+
+Step 7 — Sub-step 7.3: Create index.html
+1. Create the file
+In VS Code, right-click your frontend folder → New File → name it:
+
+index.html
+
+in your zip file
+Open that file and paste the complete code in index.html.
+
+This is our initial CINÉVERSE landing page foundation, with inline CSS and JavaScript, a premium cinematic layout, responsive design, animated visual effects, and links to the login and signup pages that we'll build in later sub-steps.
+
+sub step 7.2 : create login page with sign up and sign in functionality
+In VS Code, right-click your frontend folder → New File → name it:
+
+login.html
+
+in your zip file
+Open that file and paste the complete code in login.html
+
+2. Update the Sign Up link on the landing page
+Open frontend/index.html.
+
+Find this line in the navigation:
+<a class="signup" href="/signup.html">Sign Up</a>
+
+
+Replace it with:
+<a class="signup" href="/login.html">Sign Up</a>
+
+
+Both Log In and Sign Up now lead to the same page. The separate signup.html file is not required.
+
+Save both files with Ctrl + S.
+3. Expected workflow
+
+New customer — left side
+
+Enter email and password → Account created in PostgreSQL → Redirect to profile.html.
+
+
+
+
+Registered customer — right side
+
+Enter email and password → Verify credentials → Redirect to the movie catalogue, or to profile.html if the profile is incomplete.
+
+
+
+
+Admin — right side
+
+Use the same login form → Backend verifies the admin role → Redirect to admin.html.
+
+
+
+For now: Open http://localhost:3000/login.html and check that the two forms appear side by side. The profile and admin destination pages will be created in their own sub-steps.
+
+Sub-step 7.3: Create profile.html
+Goal: Collect the customer's full name, birthday, and phone number, save them to PostgreSQL through your existing backend, and then redirect the customer to the movie catalogue.
+
+No new folders, no separate CSS or JS files, and no changes to server.js in this sub-step.
+1. Create the file
+In VS Code, right-click frontend → New File → name it:
+
+profile.html
+2. Paste the complete code in the zip file
+
+STEP 8
+
+step 8.1: Add Movie Management APIs
+
+Log in with the admin account, then open these addresses while the browser is logged in:
+- List all movies: http://localhost:3000/api/admin/movies
+- Public movie catalogue: http://localhost:3000/api/movies
+The admin endpoint should return a JSON response with "success": true and a "movies" array. It will initially be empty.
+
+The public endpoint will continue returning the movies marked now_showing or upcoming.
+
+This step prepares the backend only; we haven't created the admin movie-management interface yet. Poster handling currently uses a path or URL saved in poster_path. We can implement local image uploads as part of the admin interface.
+
+step 8.2 : Admin dashboard
+1. Create the file
+In VS Code, right-click frontend → New File → name it:
+
+admin.html
+2. Paste the complete code in the zip file
+
+3. Install the image-upload dependency. Open the VS Code terminal in your main CINEVERSE project folder and run:
+npm install multer
+
+
+restart server
